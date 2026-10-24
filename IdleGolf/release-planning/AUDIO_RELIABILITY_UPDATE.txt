@@ -1,0 +1,72 @@
+AUDIO MUTE AND AMBIENCE RELIABILITY - B11
+October 23, 2026
+
+Completed in source using Godot 4.6 stable and real audio-mixer PCM tests. Existing
+Windows exports need rebuilding to include B06-B11. No export or Steam upload was
+performed. Output was verified inside Godot's mixer; physical speaker/device and
+subjective listening QA were not performed in this batch.
+
+Fixed behavior
+
+- Saved SFX/music mute is applied when AudioManager initializes. Background stream
+  requests are retained even when muted, and unmute starts streams that had never
+  played. Already-playing streams pause and resume at their existing positions.
+- AudioManager now owns the combined pause decision: user music mute OR shop open.
+  Unmuting in the shop cannot bypass its pause, and leaving the shop cannot bypass
+  the user's mute setting. Music mute continues to include ambience.
+- Main no longer directly manipulates background players or runs a wall-clock
+  ambience restart timer. AudioManager monitors the actual playback position and
+  seeks back at the trimmed end, preserving the existing final-20-second skip.
+  Muting/shop visits do not advance this boundary or restart paused ambience.
+- Non-looping background streams restart after their finished signal. Short
+  ambience streams use their full length instead of creating a negative interval.
+- Re-requesting the same track during a scene reload retains its playback state.
+  New scene initialization clears stale shop pause/ducking and applies saved mute.
+- SFX mute stops current pooled sounds and stops/frees temporary overflow players.
+  Unmuting permits new effects without replaying old ones.
+- Shop ducking applies -20 dB only to current/future SFX players. It no longer
+  writes the Master bus volume or changes background volume settings.
+- Background stream cleanup remains idempotent and releases streams on shutdown.
+
+Implementation
+
+idle-golf/AudioManager.gd owns requested streams, mute/shop state, playback sync,
+ambience trim looping, SFX stopping and per-player ducking.
+idle-golf/main.gd uses set_shop_open() and play_ambience(stream, 20.0), replacing
+direct stream_paused changes and the scene timer. Save schema remains version 2;
+existing settings fields and B10 investment persistence are unchanged.
+
+Validation
+
+python tests/run_audio_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  91 assertions passed with separate music/ambience/SFX AudioEffectCapture buses,
+  real AudioStreamPlayers, deterministic tone fixtures and actual game assets.
+  Verified zero PCM output while muted/paused and nonzero output after resume,
+  plus position preservation, trimmed/natural looping, SFX pool/overflow cleanup,
+  master-volume preservation, saved mute, real shop entry/exit, reload from an
+  open shop, and final cleanup. No unexpected errors or leaked-instance warnings.
+  A test-only subclass enables normal playback code in the headless test copy;
+  Dummy driver discards hardware output. PCM buffers are drained for 150 ms before
+  each sample window to avoid treating already-mixed audio as new playback.
+  Logs: .test-output/audio-tests/20261023-125633-252f88/
+
+python tests/run_course_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  All 3,177 course/shot/reward/cosmetic/Market checks passed.
+  Logs: .test-output/course-tests/20261023-125236-00a270/
+
+python tests/run_save_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  All 166 save assertions, cross-process close/Exit/retry/discard/forced-stop
+  recovery and the 600-frame scene smoke test passed.
+  Logs: .test-output/save-tests/20261023-125434-b308ab/
+
+Tests used disposable source/profile copies and never touched player saves.
+
+Engine references for the test method
+https://docs.godotengine.org/en/4.6/classes/class_audioeffectcapture.html
+https://docs.godotengine.org/en/4.6/classes/class_audioserver.html
+
+Next release work
+
+B12: clean-import diagnostics and enforcement. D03 still covers new persistent
+volume controls/mixing polish; platform QA still includes actual audio devices,
+native Windows exports and listening for loop seams/clicks.

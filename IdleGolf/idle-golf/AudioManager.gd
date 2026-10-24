@@ -45,6 +45,9 @@ var ambience_player: AudioStreamPlayer
 
 var _volume_map := {}
 var _cleaned_up := false
+var _shop_open := false
+var _sfx_ducked := false
+var _ambience_loop_end := 0.0
 
 func _ready() -> void:
 	_volume_map = {
@@ -75,6 +78,11 @@ func _ready() -> void:
 	# ambience
 	ambience_player = AudioStreamPlayer.new()
 	add_child(ambience_player)
+	music_player.finished.connect(_sync_background)
+	ambience_player.finished.connect(_sync_background)
+	# GameState loads before this autoload: honor saved mute even before the scene.
+	set_sfx_muted(GameState.sfx_muted)
+	set_music_muted(GameState.music_muted)
 
 func play_sfx(sound_name: String, pitch_scale: float = 1.0) -> void:
 	if _is_headless():
@@ -91,25 +99,51 @@ func play_sfx(sound_name: String, pitch_scale: float = 1.0) -> void:
 
 	var vol = _volume_map[sound_name].call() if _volume_map.has(sound_name) else 1.0
 	player.stream = _sounds[sound_name]
-	player.volume_db = _volume_to_db(vol)
+	player.set_meta("base_volume_db", _volume_to_db(vol))
+	player.volume_db = _volume_to_db(vol) + (-20.0 if _sfx_ducked else 0.0)
 	player.pitch_scale = pitch_scale
 	player.play()
 
 func play_music(stream: AudioStream) -> void:
-	if _is_headless():
-		return
-	music_player.stream = stream
+	if music_player.stream != stream:
+		music_player.stop()
+		music_player.stream = stream
 	music_player.volume_db = _volume_to_db(music_volume)
-	if not music_muted:
-		music_player.play()
+	_sync_background()
 
-func play_ambience(stream: AudioStream) -> void:
-	if _is_headless():
-		return
-	ambience_player.stream = stream
+func play_ambience(stream: AudioStream, trim_end_seconds: float = 0.0) -> void:
+	if ambience_player.stream != stream:
+		ambience_player.stop()
+		ambience_player.stream = stream
 	ambience_player.volume_db = _volume_to_db(ambience_volume)
-	if not music_muted:
-		ambience_player.play()
+	var length := stream.get_length() if stream else 0.0
+	# Short/unknown streams use their full duration; never make a negative timer.
+	_ambience_loop_end = length - trim_end_seconds if trim_end_seconds > 0.0 and trim_end_seconds < length else length
+	_sync_background()
+
+func _sync_background() -> void:
+	if _cleaned_up or _is_headless():
+		return
+	var paused := music_muted or _shop_open
+	for player in [music_player, ambience_player]:
+		if not is_instance_valid(player) or player.stream == null:
+			continue
+		player.stream_paused = paused
+		if not paused and not player.playing:
+			player.play()
+
+func _process(_delta: float) -> void:
+	# Follow the actual playback position. Pausing music or visiting the shop
+	# must not advance a wall-clock restart timer or reset the ambience phase.
+	if _cleaned_up or music_muted or _shop_open or not ambience_player.playing or ambience_player.stream_paused:
+		return
+	if _ambience_loop_end > 0.0 and ambience_player.get_playback_position() >= _ambience_loop_end:
+		ambience_player.seek(0.0)
+
+func set_shop_open(open: bool) -> void:
+	_shop_open = open
+	set_sfx_ducked(open)
+	_sync_background()
 
 func cleanup_audio() -> void:
 	if _cleaned_up:
@@ -138,19 +172,24 @@ func toggle_music_mute() -> void:
 
 func set_sfx_muted(muted: bool) -> void:
 	sfx_muted = muted
+	if muted:
+		for player in _player_pool:
+			_stop_and_clear_player(player)
+		# Stopped overflow players won't emit finished, so release them here.
+		for player in _temp_players:
+			_stop_and_clear_player(player)
+			player.queue_free()
+		_temp_players.clear()
 
 func set_music_muted(muted: bool) -> void:
 	music_muted = muted
-	if music_player:
-		music_player.stream_paused = music_muted
-	if ambience_player:
-		ambience_player.stream_paused = music_muted
+	_sync_background()
 
 func set_sfx_ducked(ducked: bool) -> void:
-	if ducked:
-		AudioServer.set_bus_volume_db(0, -20.0)
-	else:
-		AudioServer.set_bus_volume_db(0, 0.0)
+	_sfx_ducked = ducked
+	# Duck only effects, preserving master/background levels and future settings.
+	for player in _player_pool + _temp_players:
+		player.volume_db = float(player.get_meta("base_volume_db", 0.0)) + (-20.0 if ducked else 0.0)
 
 func _get_free_player() -> AudioStreamPlayer:
 	for p in _player_pool:

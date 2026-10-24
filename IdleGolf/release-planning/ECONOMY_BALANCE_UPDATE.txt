@@ -1,0 +1,178 @@
+IDLE GOLF - C05 ECONOMY MODEL AND FIRST BALANCE PASS
+October 23, 2026
+
+Status
+
+Layout revision: COURSE_LAYOUT_UPDATE.txt documents the restored Desert layout,
+removed Beach additions, nearby lighthouse and final Cargo Ship. The current
+reference estimate is 19.04 / 23.90 / 20.99 hours (63.93 total). The initial C05
+numbers below describe the former layout; price curves are unchanged.
+
+C05's progression model and first tuning pass are implemented. The reference
+campaign estimates 19.04 hours for Big Piney, 18.65 for Desert and 23.07 for Beach:
+60.76 hours total. These are expected-value estimates, not observed player times.
+C08/G04 still require unfamiliar players and a full fresh-save completion run.
+
+The model does not add mandatory wait timers, completion gates or course resets.
+Players can unlock other courses early and choose their own order. The reference
+route completes the three final targets in sequence, with carried-over progress.
+
+Changes in the game
+
+1. Ball Speed keeps its existing starting prices through level 60. Later prices
+   use a bounded-growth campaign curve instead of continuing exponential growth.
+   Beyond level 265 the price rises linearly. Shot strength, target locations,
+   target health, XP rewards and the definition of completion are unchanged.
+   This replaces financially prohibitive upgrades with an affordable route to
+   the Mountain, Pyramids and Lighthouse.
+
+2. Medal upgrade prices now fit the record-based retirement reward scale:
+   Multi Ball: 100, 175, 250 medals (three upgrades).
+   Consistency Mult: 25, 50, 75 ... 250 medals (ten upgrades).
+   Multi Ball Spread: 20, 30, 40 ... 70 medals (six upgrades).
+   Flat Distance: 8 medals initially, increasing by 4 per level.
+   Existing caps/effects remain. Cash/medal purchases use the correct currency;
+   direct purchase calls now enforce caps and demo restrictions as well as UI calls.
+
+3. Market growth no longer compounds at 20% every second. It grows at 0.02% per
+   second, with a shared $5/second ceiling across all pots. Growth transitions
+   smoothly from compounding to a fixed maximum rate. Time-step-independent
+   integration prevents FPS or splitting investments from multiplying interest.
+   New deposit streak bonuses stop increasing at 10x. Existing saved pots and
+   streak counts are retained; no accrued investment is removed or reset.
+   No offline earnings are added. Save schema remains 3.
+
+4. EconomyRules.gd is the shared price schedule used by buying, refunds and price
+   displays. Retirement calculations are centralized there; their existing
+   record-based formula and soft cap are retained. Repeating the same record
+   still earns no medals. Help text reflects the new prices and Market limits.
+
+Existing saves
+
+Money, XP, levels, equipment, medals, investments and completion are preserved.
+Owned upgrade levels are not reduced. Buying and refunding use the new schedule;
+historical prices were never stored, so refunds use the current cost for the
+refunded level. A buy/refund round trip creates no money, XP or retirement record.
+An old save with a large investment keeps it; use the fresh playtest launcher to
+evaluate the new campaign from zero rather than treating an old rich save as a
+fresh-start pacing measurement.
+
+Design milestones (A02)
+
+First affordable purchase: within the first minute with regular interaction.
+First retirement target: approximately 15-30 minutes; model chooses 20 minutes.
+Early course/equipment access: approximately 30-60 minutes for Course 2 and early
+golfers, around 2-3 hours for Course 3 and stronger retained equipment. Access does
+not mean beating the course. Model's second retirement is at two hours, if its
+record improvement earns at least 100 medals. Later retirements follow course
+completion. These are planning targets, never forced retirement timers.
+Final targets: roughly 20 hours of running-game progression per course, ~60 total.
+Time closed does not count; background/suspend policy is still D07.
+
+Model and reproducibility
+
+python tests/run_economy_tests.py --godot <path-to-Godot-4.6.exe>
+
+This command makes a clean full-game copy, isolates all profile directories,
+imports it, and exports the live catalogs, upgrade prices, stat samples, target
+hitboxes, respawn delays, flag data and physics settings. The Python model reads
+that snapshot. Source hashes, JSON/CSV results, runtime logs and the physics
+calibration are written under .test-output/economy/<timestamp>/.
+
+For an additional planning experiment on an existing snapshot:
+python tools/simulate_progression.py <economy-snapshot.json> --output <result.json>
+Options include --policy balanced|speed|income, --cadence (purchase/aim checks in
+seconds), --income-factor and --max-hours. --power/--scale are analysis-only price
+experiments; they do not change the actual game's schedule.
+
+The model uses linear-drag ballistics, legal aim/loft limits, whiffs, distance
+variation and a 24-sample integration over the actual final-target hitboxes.
+Target hits accumulate at their expected rate; rewards are credited only when
+the target is destroyed, then the authored respawn delay is observed. Damage
+and pending rewards are cleared on retirement, as in the scene reload.
+Money/XP, level bonuses, current-run records, medal spending, equipment and cash
+upgrade resets carry through the campaign. Purchases require earned currency.
+
+The reference route buys upgrades using marginal utility per dollar, chooses
+rewarding reachable targets, saves medals for course access and Lion Trees, and
+uses Standard then Wrecking Ball. It buys at most three levels of each modeled
+medal upgrade. Every minute it revisits purchases and aim; another scenario
+checks every five minutes. Only center balls count toward target damage; fan
+balls add estimated landing income. There are no free stats or partial-health
+fixtures in the progression model. Physics calibration supplies the model's
+earned state directly to isolate the accuracy of its shot prediction.
+
+Approximation boundaries
+
+This is a steady-state expected-value model, not a 60-hour replay of every shot.
+It omits travel delays in income, uses continuous rather than discrete-frame drag,
+approximates collisions/rebound landings, and credits expected fractional hits.
+It assumes competent target selection and aim. It does not simulate discovery,
+menu time, missed purchases, session interruptions or partial damage lost on quit.
+It does not reproduce Homing steering, Firework fragment trajectories, Pinball
+chains, golden-flag selection or a Market-focused strategy over the full campaign.
+Their reward-routing regressions still run. Income sensitivity scenarios show
+how additional bonuses or lower effective earnings move the pacing; they are
+not claimed to be exact simulations of those special balls.
+
+Reference and sensitivity estimates
+
+Scenario                         Big Piney   Desert   Beach    Total
+Balanced purchases, every minute   19.04 h    18.65 h  23.07 h  60.76 h
+Speed-priority purchases           16.69 h    16.96 h  22.65 h  56.30 h
+Income-priority purchases          21.02 h    21.85 h  26.73 h  69.60 h
+25% lower effective earnings       25.79 h    24.82 h  31.33 h  81.94 h
+50% higher effective earnings      12.79 h    12.47 h  15.42 h  40.67 h
+Balanced, checking every 5 minutes  19.48 h    18.88 h  23.72 h  62.08 h
+
+This spread is a reason to playtest, not a guarantee that every route takes 60h.
+With the same refined purchase/retirement policy, the old schedule reaches Big
+Piney in 23.68 hours but needs another 92.84 hours for Desert; the campaign is
+unfinished at the 120-hour horizon. Earlier exploratory policies stalled sooner.
+ECONOMY_BASELINE.json records the comparable run and original snapshot hash.
+That baseline excludes the old runaway Market strategy; it is not a claim that
+no possible old-game strategy could finish faster.
+
+Validation
+
+207 economy checks cover live UI purchases/refunds, curve boundaries, cash/medal
+currency, caps, retirement records, demo restrictions, existing investment values,
+streak limits, growth ceilings, split-pot behavior and tick-size independence.
+Nine real-physics checks exercise 32 swings per course using the simulated earned
+stats and legal controls. Final-target hit rates were 32/32, 31/32 and 31/32 versus
+the model's ~98%; no extra speed or partial target damage was supplied.
+Model stat/reward/retirement samples are checked against the actual Godot runtime
+to catch formula drift. Reference design bands are 16-24 hours per course and
+55-65 hours overall. The source release gate now requires these economy checks.
+
+Fresh balance testing
+
+The Windows build includes a balance-playtest folder. Run Play Balance Test.cmd
+to play the normal full game with a separate, initially empty profile. It supplies
+no free currency, upgrades, automatic purchases or damaged targets. Reopen the
+same launcher to continue. Reset Game clears only that profile.
+The completion-test launcher is still available for quick milestone/save checks;
+its boosted fixture must not be used to measure progression pacing.
+
+Next validation
+
+C02: finish the retained golfer presentation/passive review.
+C08/G04: record real first-retirement, unlock and course-completion times from
+fresh saves, including special-ball strategies and players unfamiliar with aiming.
+Adjust the curve if those observations differ materially from this model.
+
+Verified Windows build
+
+C:\Users\43bat\Documents\GitHub\GameEngineFundamentals\IdleGolf\idle-golf\builds\windows\20261023-150946-beea3b
+
+Normal game: full/IdleGolf.exe
+Fresh progression: balance-playtest/Play Balance Test.cmd
+Quick milestone test: completion-test/Test Completion.cmd
+
+All source gates, demo/full exports, packaged save/quit/recovery tests, four
+completion-launcher stages and fresh balance-launcher checks passed. The manifest
+records hashes and evidence. No interactive test profile has been initialized.
+
+Economy evidence: .test-output/economy/20261023-151114-68087c/
+Source/export evidence: .test-output/windows-export/20261023-150946-beea3b/
+Runtime evidence: .test-output/export-tests/20261023-151155-ea3323/

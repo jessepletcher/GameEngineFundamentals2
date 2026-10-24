@@ -1,0 +1,143 @@
+IDLE GOLF 1.0 - OWNER DECISIONS AND REMAINING DESIGN DETAILS
+October 23, 2026
+
+Confirmed direction
+
+- Ship all current courses, balls, golfers and mechanics.
+- Main completion goal: destroy the furthest target on each of the three courses.
+- Ship currently playable mechanics; defer the disconnected relic prototype.
+- Target approximately 20 hours per course, roughly 60 hours total.
+- No offline earnings.
+- Target Windows, macOS and Linux.
+- Touchscreen/mobile capability is desired later, not a 1.0 requirement.
+- English plus the nine additional languages below are desired if the effort is
+  manageable. Additional languages are conditional, not confirmed store promises.
+
+Current playable catalog retained for 1.0
+
+Courses (3): Big Piney, Course 2, Course 3.
+Balls (7): Standard Ball, Homing Ball, Pin Seeker, Firework Ball, Market Ball,
+Wrecking Ball, Pin Ball.
+Golfers (8): Standard Golfer, Dyson, Shop Keep, Lion Trees, Blue Collar, Zoomer,
+Lamb, Money Daily.
+
+Retain automatic shots, aim/spin controls, cash and medal upgrades, multiball,
+XP/levels and bonuses, retirement/prestige, equipment and course switching,
+destructible targets, flags/golden flags, all current ball effects and golfer
+passives, and the existing shop/settings/save/recovery systems.
+Retaining content does not waive C01/C02/C04 finishing work or C05 balance work.
+Existing demo/full separation remains as decided in A05; this is the full-game
+scope and does not make all paid content available in the demo.
+
+Relics are explicitly deferred beyond 1.0. RelicShop.gd and RelicCard.tscn are
+prototype files, not playable launch content. Preserve the prototype for future
+work; exclude unused prototype resources from shipping packages under E05.
+A01's content selection is now complete; implementation/presentation work remains.
+
+Completion and pacing
+
+Owner-selected completion rule: being able to destroy the furthest target.
+Use the actual destruction of that course's furthest destructible as the observable
+completion event. Reaching it, hitting it once without destroying it, buying a
+course, or reaching a currency/level threshold is not sufficient. No additional
+course-objective checklist is required. Destroying all three final targets is
+the main game completion goal.
+
+C06 now saves completion when the active course's identified final target is
+destroyed. All three saved milestones together mark the game complete. A progress
+button and completion panel show the remaining goals and newly earned victories.
+Completion survives respawns, switching courses, restarting and retirement.
+Confirmed Reset Game clears it; a failed reset restores the previous milestones.
+Save schema 3 migrates older saves with no invented completion. Failed writes keep
+earned milestones in memory for retry and use the existing save-warning/quit flow.
+See COMPLETION_UPDATE.txt for validation and the isolated Windows test launcher.
+
+C01 is implemented: the first two courses have five targets and Beach has its
+original two objects. Added Beach props were removed. Final targets are
+Level1/Destructible3 (Mountain, z=1500), Level2/Pyramids (z=2000), and
+Level3/CargoShip (z=1700), each with 500 hits required. The ordinary lighthouse
+is at z=90, about 98 displayed yards. All three pyramid hitboxes
+contribute to the same target. Stable target IDs and final-target labels identify
+the goals. Real launcher/physics tests verify every target's hit areas and final
+destruction, using partial-damage fixtures and upgraded stats. C05 now models affordable
+progression; observed player pacing remains C08/G04. See COURSE_TARGETS_UPDATE.txt
+and COURSE_LAYOUT_UPDATE.txt for the revised layout and completion goal.
+
+Working interpretation for balance planning: 20 hours of in-game progression
+per course, including idle time while running, and about 60 hours sequentially.
+Time while the game is closed does not count toward earnings. This is a pacing
+target, not a mandatory wait timer or an already-measured completion duration.
+Minimized/background behavior remains D07; do not promise that it is settled.
+C05 models later courses using carried-over levels, medals and unlocks. A02 design
+targets are now recorded: first retirement in 15-30 minutes, early unlocks around
+30-60 minutes and later access around 2-3 hours. The revised model estimates 19.04,
+23.90 and 20.99 hours per course (63.93 total). These are planning estimates; C08/G04
+must validate actual fresh-save progression and special-ball strategies.
+
+Platforms and input
+
+Windows, macOS and Linux are selected release targets, not yet all verified.
+Current evidence: validated Windows demo/full export pipeline; an older Linux
+demo preset; no Linux full or macOS presets. E03/E06/G06/G07 must cover all three
+desktop platforms, their packaged dependencies and actual target-machine tests.
+macOS needs bundle/export setup and a distribution/signing plan; a Windows-hosted
+export alone does not prove it runs on a Mac. Supported OS versions, architectures
+and minimum specs remain to be measured/recorded.
+
+Use existing mouse/keyboard controls as the working desktop input baseline.
+Touchscreen/mobile work is deferred by the owner. Controller/Steam Deck support
+has not been promised. Keep future touch handling in mind when revising controls,
+but do not add mobile exports or claim mobile support in the 1.0 release plan.
+
+Requested languages
+
+English
+French
+Portuguese - Brazil
+Spanish - Spain
+Chinese - Simplified
+German
+Chinese - Traditional
+Spanish - Latin America
+Japanese
+Russian
+
+Preserve regional Spanish and Portuguese variants and both Chinese scripts as
+distinct requested translations. The supplied numeric columns had no headers;
+they are not treated as word counts, translation progress or an effort estimate.
+
+Localization feasibility: achievable, but not a quick configuration change in
+this project. Inspection found no translation catalogs, registered localization
+settings or explicit tr()/TranslationServer calls in the production scripts.
+Catalog entries, help, settings, save dialogs and formatted UI strings are
+currently English in scripts/scenes. The bundled balatro.otf font's required
+language coverage has not been verified.
+
+Recommended D09 work sequence:
+1. Inventory player-facing text, including any text baked into art; externalize
+   translatable strings and handle formatted placeholders correctly.
+2. Add language selection, saved preference and English fallback without
+   translating stable save/catalog IDs.
+3. Check multilingual font coverage, fallback fonts and their distribution rights.
+4. Test longer text, CJK line wrapping, numbers, dialogs and every shop/help page.
+5. Translate and review each requested language in context before promising it.
+
+English remains the current implementation baseline. Keep all nine additional
+languages on the requested list; estimate after the string inventory and layout
+trial, then decide the launch set. Do not mark D09 complete or add store-language
+claims based solely on generated translations or available engine support.
+
+References checked for feasibility
+https://docs.godotengine.org/en/4.6/tutorials/i18n/internationalizing_games.html
+https://docs.godotengine.org/en/4.6/tutorials/i18n/localization_using_spreadsheets.html
+https://docs.godotengine.org/en/4.6/tutorials/export/exporting_for_macos.html
+
+Next work
+
+The retained golfer roster is finished under C02; see GOLFER_REVIEW_UPDATE.txt
+for the eight-golfer review and Windows tester. Next: remaining C04 catalog art,
+C07 golden events and D01 new-player guidance. Validate the C05 economy
+with real fresh-save playtests under C08/G04. Expand desktop packaging and inventory
+localization text alongside that work. See ECONOMY_BALANCE_UPDATE.txt for the
+simulation, price changes, preserved-save behavior and separate balance launcher.
+Additional desktop platforms and translations still need their own release work.

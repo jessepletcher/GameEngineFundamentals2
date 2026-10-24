@@ -1,4 +1,5 @@
 extends Node3D
+const RewardRules = preload("res://RewardRules.gd")
 
 const Ball = preload("res://scenes/Ball.tscn")
 
@@ -41,6 +42,7 @@ const FloatingText = preload("res://scenes/FloatingText.tscn")
 var _floating_texts: Array = []
 var _text_queue: Array = []
 var _queue_processing: bool = false
+var _queue_batch_remaining: int = -1
 const TEXT_QUEUE_INTERVAL := 0.15
 const MAX_INDIVIDUAL_TEXTS := 4  # show this many individually, then batch the rest
 const HIDE_WITH_UI_GROUP := "hide_with_ui"
@@ -80,17 +82,14 @@ var _money_pulse_tween: Tween
 var _money_label_base_color: Color = Color(0.082, 0.502, 0.098)
 const MONEY_COUNT_UP_COLOR := Color(1.0, 0.95, 0.4)
 
-# Market Ball — invested money per flag
-var _market_investments := {}  # flag node -> invested money
+# Market Ball: persistent values live in GameState; nodes are presentation only.
+var _market_flags := {}  # stable course/flag key -> current scene flag
 var _market_labels := {}  # flag node -> Label3D showing invested amount
 var _market_label_displayed := {}  # flag node -> displayed counter value
 var _market_label_color_tweens := {}  # flag node -> color pulse tween
 var _market_label_hit_tweens := {}  # flag node -> scale/rotation impact tween
 var _market_label_hit_scale := {}  # flag node -> active impact scale multiplier
 var _market_label_hit_rotation := {}  # flag node -> active impact z rotation
-var _market_streak_flag: Node3D = null
-var _market_streak_count := 0
-const MARKET_GROWTH_RATE := 0.20  # 10% per second
 
 # Golden Flag
 var _golden_flag: Node3D = null
@@ -103,17 +102,34 @@ var _course_data := {
 	"course2": {"sprites": null, "flags": null},
 	"course3": {"sprites": null, "flags": null},
 }
+var _course_revision := 0
 
 func _get_active_flags() -> Node3D:
 	return _course_data[GameState.equipped_course]["flags"]
 
 func _process(delta: float) -> void:
-	# grow market ball investments
-	for flag in _market_investments:
-		if not is_instance_valid(flag):
-			continue
-		_market_investments[flag] *= (1.0 + MARKET_GROWTH_RATE * delta)
-		_update_market_label(flag)
+	GameState.market.grow(delta)
+	for key in GameState.market.pots:
+		_update_market_label(_market_flags.get(key))
+	if retire_dialog.visible:
+		_update_retire_preview()
+
+func _market_key(flag: Node3D) -> String:
+	# Authored course/flag names are save identities, independent of instance IDs.
+	for course in _course_data:
+		if flag.get_parent() == _course_data[course].flags:
+			return course + "/" + str(flag.name)
+	return ""
+
+func _restore_market_labels() -> void:
+	for key in GameState.market.pots:
+		var flag = _market_flags.get(key)
+		if not is_instance_valid(flag) or not flag.can_process():
+			# Removed/renamed targets or a sanitized course must not strand money.
+			_cashout_all_investments()
+			return
+	for key in GameState.market.pots:
+		_update_market_label(_market_flags[key])
 
 func _set_ui_hidden(hidden: bool) -> void:
 	_ui_hidden = hidden
@@ -154,13 +170,17 @@ func _set_spawning_disabled(disabled: bool) -> void:
 		shot_timer.wait_time = BASE_INTERVAL / GameState.get_fire_rate()
 		shot_timer.start()
 
-func _switch_course() -> void:
+func _switch_course(cashout: bool = true) -> void:
+	golfer.cancel_swing()
+	_course_revision += 1
+	# Course switches end outgoing shots immediately. Removing group membership
+	# and collisions now also protects the frame before queue_free is processed.
+	for ball in get_tree().get_nodes_in_group("shots"):
+		if ball.has_method("cancel_shot"):
+			ball.cancel_shot()
 	# cash out any market investments before switching
-	var cashout = _cashout_all_investments()
-	if cashout > 0.0:
-		GameState.money += cashout
-		GameState.lifetime_money += cashout
-		GameState.money_changed.emit(GameState.money)
+	if cashout:
+		_cashout_all_investments()
 	# deactivate golden flag on course switch
 	if _golden_flag and is_instance_valid(_golden_flag):
 		_golden_flag.deactivate_golden()
@@ -169,9 +189,23 @@ func _switch_course() -> void:
 		_start_golden_timer()
 	for key in _course_data:
 		var show = key == GameState.equipped_course
-		_course_data[key]["sprites"].visible = show
-		_course_data[key]["flags"].visible = show
+		for branch in [_course_data[key]["sprites"], _course_data[key]["flags"]]:
+			branch.visible = show
+			# Children inherit this state: scripts, animations and bound tweens
+			# pause, and CollisionObject3D's REMOVE mode leaves the physics world.
+			branch.process_mode = Node.PROCESS_MODE_INHERIT if show else Node.PROCESS_MODE_DISABLED
 	_show_all_yardage()
+
+func _scene_timer(seconds: float) -> Timer:
+	# Delayed gameplay/UI work belongs to this scene. Free pending timers with
+	# it on quit or reload, instead of retaining awaiting SceneTreeTimer states.
+	var timer := Timer.new()
+	timer.one_shot = true
+	timer.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(timer)
+	timer.timeout.connect(timer.queue_free)
+	timer.start(seconds)
+	return timer
 
 func _ready() -> void:
 	_apply_saved_runtime_settings()
@@ -181,7 +215,10 @@ func _ready() -> void:
 	_course_data["course2"]["flags"] = level2_flags
 	_course_data["course3"]["sprites"] = level3_sprites
 	_course_data["course3"]["flags"] = level3_flags
-	_switch_course()
+	for course in _course_data:
+		for flag in _course_data[course].flags.get_children():
+			_market_flags[_market_key(flag)] = flag
+	_switch_course(false)
 	GameState.course_changed.connect(_switch_course)
 	_displayed_money = GameState.money
 	money_label.text = GameState.format_number(GameState.money)
@@ -220,16 +257,7 @@ func _ready() -> void:
 
 	# nature ambience loop
 	var ambience_stream = load("res://u_vr5icvkppa-nature-ambience-323729.mp3")
-	ambience_stream.loop = true
-	AudioManager.play_ambience(ambience_stream)
-	AudioManager.ambience_volume = 0.3
-	# cut off last 20 seconds by restarting when it reaches that point
-	var ambience_length = ambience_stream.get_length()
-	var loop_timer = Timer.new()
-	loop_timer.wait_time = ambience_length - 20.0
-	loop_timer.autostart = true
-	loop_timer.timeout.connect(func(): AudioManager.ambience_player.play())
-	add_child(loop_timer)
+	AudioManager.play_ambience(ambience_stream, 20.0)
 	confirm_reset.pressed.connect(_on_confirm_reset)
 	cancel_reset.pressed.connect(_on_cancel_reset)
 	_setup_reset_dialog_style()
@@ -237,10 +265,13 @@ func _ready() -> void:
 
 	# settings menu
 	_setup_settings_menu()
+	var completion_ui := preload("res://CompletionUI.gd").new()
+	completion_ui.name = "CompletionUI"
+	$CanvasLayer.add_child(completion_ui)
 
 	# connect destructibles
 	for obj in get_tree().get_nodes_in_group("destructibles"):
-		obj.destroyed.connect(_on_destructible_destroyed)
+		obj.destroyed.connect(_on_destructible_destroyed.bind(obj))
 
 	# connect golden flag signals on all courses' flags
 	for key in _course_data:
@@ -256,17 +287,22 @@ func _ready() -> void:
 
 	_show_all_yardage()
 	_setup_combo_banner()
+	_restore_market_labels()
 
 func _show_all_yardage() -> void:
 	for obj in get_tree().get_nodes_in_group("destructibles"):
-		if is_instance_valid(obj):
+		if is_instance_valid(obj) and obj.can_process():
 			obj.show_yardage()
 
-func _on_destructible_destroyed(reward: float) -> void:
-	GameState.money += reward
-	GameState.lifetime_money += reward
-	GameState.money_changed.emit(GameState.money)
-	GameState.add_xp(reward * 0.1)
+func _on_destructible_destroyed(reward: float, earned_xp: float, source: Node3D) -> void:
+	# Signals can still run on disabled nodes, so verify the source as well.
+	if not is_instance_valid(source) or not source.can_process():
+		return
+	GameState.credit_reward({"money": reward, "xp": earned_xp})
+	var course_id: String = GameState.equipped_course
+	if source.is_final_target and not source._is_alive and source._hits_taken >= source.hits_required:
+		if _course_data[course_id].sprites.is_ancestor_of(source):
+			GameState.record_course_completion(course_id, source.target_id)
 	_text_queue.append({"money": reward, "yards": 0.0, "flag_hit": false, "direct_hit": true})
 	if not _queue_processing:
 		_process_text_queue()
@@ -278,8 +314,11 @@ func _on_xp_changed(current_xp: float, required_xp: float) -> void:
 
 func _on_confirm_retire() -> void:
 	retire_dialog.visible = false
-	GameState.retire()
-	get_tree().reload_current_scene()
+	if GameState.retire():
+		get_tree().reload_current_scene()
+	else:
+		level_label.text = "Level %d" % GameState.level
+		_restore_market_labels()
 
 func _on_cancel_retire() -> void:
 	retire_dialog.visible = false
@@ -288,9 +327,12 @@ func _on_medals_changed(amount: float) -> void:
 	medals_label.text = " " + GameState.format_number(amount)
 
 func _on_retire_pressed() -> void:
-	var medals = GameState.get_medal_reward()
-	retire_info_label.text = "You will earn %s Medals!\n\nRetiring resets run money and cash upgrades.\nLevels, unlocks, balls, golfers, courses, and medal upgrades stay." % GameState.format_number(medals)
+	_update_retire_preview()
 	retire_dialog.visible = true
+
+func _update_retire_preview() -> void:
+	var medals = GameState.get_medal_reward()
+	retire_info_label.text = "You will earn %s Medals!\n\nMarket investments cash out into this run before retirement.\nRetiring resets run money and cash upgrades. Levels, unlocks and course completion stay." % GameState.format_number(medals)
 
 func _on_leveled_up(new_level: int, stat_boosted: String) -> void:
 	level_label.text = "Level %d" % new_level
@@ -339,9 +381,7 @@ func _on_open_shop_pressed() -> void:
 		return
 	AudioManager.play_sfx("bell")
 	_transitioning = true
-	AudioManager.music_player.stream_paused = true
-	AudioManager.ambience_player.stream_paused = true
-	AudioManager.set_sfx_ducked(true)
+	AudioManager.set_shop_open(true)
 
 	var screen_w = get_viewport().get_visible_rect().size.x
 
@@ -385,10 +425,7 @@ func _on_shop_closed() -> void:
 		_shop_layer = null
 		_shop_instance = null
 	_transitioning = false
-	AudioManager.set_sfx_ducked(false)
-	if not AudioManager.music_muted:
-		AudioManager.music_player.stream_paused = false
-		AudioManager.ambience_player.stream_paused = false
+	AudioManager.set_shop_open(false)
 	# reload golfer sprite in case player switched golfer
 	golfer._load_golfer_sprite()
 	_show_all_yardage()
@@ -438,16 +475,18 @@ func _hit_ball() -> void:
 	if _spawning_disabled:
 		return
 	AudioManager.play_sfx("hit")
+	var context := GameState.capture_shot_context(_course_revision)
 	var modifier = shot_control.get_launch_modifier()
-	var ball_count = GameState.get_ball_count()
-	var multi_spread_step := GameState.get_multi_ball_spread_degrees()
-	var consistency_mult := float(GameState.balls[GameState.equipped_ball].get("consistency_mult", 1.0))
-	var shot_spread: float = BASE_SPREAD / (GameState.get_consistency() * consistency_mult)
+	var ball_count: int = context.ball_count
+	var multi_spread_step: float = context.multi_spread
+	var consistency_mult := float(context.ball_data.get("consistency_mult", 1.0))
+	var shot_spread: float = BASE_SPREAD / (context.consistency * consistency_mult)
 	var shared_spread_degrees := randf_range(-shot_spread, shot_spread)
 	var shot_balls: Array[RigidBody3D] = []
 	for i in ball_count:
 		var ball = Ball.instantiate()
-		ball._speed = BASE_SPEED * GameState.get_ball_speed()
+		ball.shot_context = context
+		ball._speed = BASE_SPEED * context.ball_speed
 		ball._spread = 0.0
 		var fan_offset_degrees := 0.0
 		if i > 0:
@@ -468,14 +507,21 @@ func _hit_ball() -> void:
 		if ball._is_whiff:
 			_on_ball_whiffed()
 
+func _is_shot_current(ball: RigidBody3D) -> bool:
+	return is_instance_valid(ball) and not ball._is_fake and ball.is_shot_active() and ball.shot_context.course_revision == _course_revision
+
 func _on_ball_landed(yards: float, ball: RigidBody3D) -> void:
-	var base_money = pow(yards, 2) * 0.0002 + 5
+	if not _is_shot_current(ball) or ball._is_fake or ball._landing_paid:
+		return
+	ball._landing_paid = true
+	var context: Dictionary = ball.shot_context
+	var payout_multiplier: float = ball._payout_multiplier
 
 	var best_bonus = 0.0
 	var direct_hit = false
 	var hit_flag: Node3D = null
 	for flag in _get_active_flags().get_children():
-		var result = flag.check_hit(ball.global_position)
+		var result = flag.check_hit(ball.global_position, context, payout_multiplier)
 		if result[0] > best_bonus:
 			best_bonus = result[0]
 		if result[1]:
@@ -484,18 +530,8 @@ func _on_ball_landed(yards: float, ball: RigidBody3D) -> void:
 
 	if best_bonus > 0.0:
 		AudioManager.play_sfx("flag")
-		var flag_mult = GameState.balls[GameState.equipped_ball].get("flag_mult", 1.0)
-		base_money += best_bonus * flag_mult
-
-	if direct_hit:
-		base_money *= 2.5
-
-	var payout_multiplier := 1.0
-	var ball_payout = ball.get("_payout_multiplier")
-	if ball_payout != null:
-		payout_multiplier = float(ball_payout)
-	var final_money = base_money * payout_multiplier * GameState.get_money_mult()
-	var is_market = GameState.balls[GameState.equipped_ball].get("is_market", false)
+	var reward := RewardRules.landing(context, yards, best_bonus, direct_hit, payout_multiplier)
+	var is_market = context.ball_data.get("is_market", false)
 
 	if direct_hit:
 		_register_direct_hit()
@@ -503,55 +539,37 @@ func _on_ball_landed(yards: float, ball: RigidBody3D) -> void:
 		_register_miss()
 
 	if is_market and direct_hit and hit_flag:
-		# invest money into this flag instead of cashing
-		if is_instance_valid(_market_streak_flag) and hit_flag == _market_streak_flag:
-			_market_streak_count += 1
-		else:
-			_market_streak_flag = hit_flag
-			_market_streak_count = 1
-		var pot_add: float = final_money * float(_market_streak_count)
-		if hit_flag not in _market_investments:
-			_market_investments[hit_flag] = 0.0
-		_market_investments[hit_flag] += pot_add
+		var deposit := GameState.market.deposit(_market_key(hit_flag), reward)
+		var pot_add: float = deposit.money
 		_update_market_label(hit_flag, true)
 		_text_queue.append({"money": pot_add, "yards": yards, "flag_hit": true, "direct_hit": true, "invested": true})
 	else:
-		# cash out any market investments when a ball misses
+		# Any landing that does not make a Market deposit cashes out the pots.
 		var cashout = _cashout_all_investments()
-		final_money += cashout
-		GameState.money += final_money
-		GameState.lifetime_money += final_money
-		GameState.money_changed.emit(GameState.money)
-		GameState.add_xp(final_money * 0.1)
-		_text_queue.append({"money": final_money, "yards": yards, "flag_hit": best_bonus > 0.0, "direct_hit": direct_hit, "cashout": cashout})
+		GameState.credit_reward(reward)
+		_text_queue.append({"money": reward.money + cashout, "yards": yards, "flag_hit": best_bonus > 0.0, "direct_hit": direct_hit, "cashout": cashout})
 	if not _queue_processing:
 		_process_text_queue()
-	else:
-		# safety: if queue is stuck, force restart
-		if _floating_texts.size() == 0 and _text_queue.size() > 3:
-			_queue_processing = false
-			_process_text_queue()
 
 	if yards > 500.0 and is_instance_valid(ball):
 		ball.queue_free()
 		return
 
-	var is_pinball = GameState.balls[GameState.equipped_ball].get("is_pinball", false)
+	var is_pinball = context.ball_data.get("is_pinball", false)
 	if is_pinball and direct_hit and hit_flag and is_instance_valid(ball):
 		_pinball_chain(ball, hit_flag)
 	elif direct_hit and is_instance_valid(ball):
 		ball.queue_free()
 	else:
-		await get_tree().create_timer(3.0).timeout
-		if is_instance_valid(ball):
-			ball.queue_free()
+		# Godot disconnects this target-bound callable if a course switch frees
+		# the ball first; a lambda would retain an invalid captured object.
+		_scene_timer(3.0).timeout.connect(ball.queue_free)
 
 
 func _pinball_chain(ball: RigidBody3D, first_flag: Node3D) -> void:
-	# stop physics so we can tween the ball manually
+	if not _is_shot_current(ball):
+		return
 	ball.freeze = true
-
-	# gather remaining flags sorted by distance from first flag
 	var remaining_flags: Array = []
 	for flag in _get_active_flags().get_children():
 		if flag != first_flag:
@@ -559,71 +577,66 @@ func _pinball_chain(ball: RigidBody3D, first_flag: Node3D) -> void:
 	remaining_flags.sort_custom(func(a, b):
 		return a.global_position.distance_to(first_flag.global_position) < b.global_position.distance_to(first_flag.global_position)
 	)
+	_advance_pinball_chain(ball, remaining_flags, 0)
 
-	for flag in remaining_flags:
-		if not is_instance_valid(ball) or not is_instance_valid(flag):
-			break
-
-		# fly to the flag
-		var fly_tween = create_tween()
-		var travel_dist = ball.global_position.distance_to(flag.global_position)
-		var fly_time = clampf(travel_dist * 0.003, 0.1, 0.4)
-		# arc upward slightly
-		var from_pos := ball.global_position
-		var mid_point = (ball.global_position + flag.global_position) / 2.0
-		mid_point.y += travel_dist * 0.15
-		_spawn_pinball_beam(from_pos, flag.global_position, fly_time * 2.0)
-		fly_tween.tween_property(ball, "global_position", mid_point, fly_time * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		fly_tween.tween_property(ball, "global_position", flag.global_position, fly_time * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		await fly_tween.finished
-
-		if not is_instance_valid(ball):
-			break
-
-		# cash this flag hit
-		AudioManager.play_sfx("flag_stick")
-		flag._wiggle()
-		_spawn_pinball_bumper_flash(flag.global_position)
-		_register_direct_hit()
-		var flag_bonus = flag.global_position.z * 0.1 * flag.distance_mult
-		var flag_mult = GameState.balls[GameState.equipped_ball].get("flag_mult", 1.0)
-		var pin_money = (flag_bonus * flag_mult * 2.5) * GameState.get_money_mult()
-		GameState.money += pin_money
-		GameState.lifetime_money += pin_money
-		GameState.money_changed.emit(GameState.money)
-		GameState.add_xp(pin_money * 0.1)
-
-		var pin_yards = flag.global_position.distance_to(tee_position.global_position) * 1.094
-		_text_queue.append({"money": pin_money, "yards": pin_yards, "flag_hit": true, "direct_hit": true})
-		_spawn_pinball_score_pop(flag.global_position, pin_money)
-		if not _queue_processing:
-			_process_text_queue()
-
-		# check golden flag
-		if flag._is_golden:
-			var golden_bonus = flag_bonus * 50.0
-			flag.golden_hit.emit(flag, golden_bonus)
-			flag.deactivate_golden()
-
-	# done chaining — despawn
-	if is_instance_valid(ball):
+func _advance_pinball_chain(ball: RigidBody3D, flags: Array, index: int) -> void:
+	if not _is_shot_current(ball):
+		return
+	if index >= flags.size() or not is_instance_valid(flags[index]) or not flags[index].can_process():
 		ball.queue_free()
+		return
+	var flag: Node3D = flags[index]
+	# A ball-bound tween and a signal callback can be safely freed on a course
+	# switch. No suspended coroutine retains the cancelled shot's resources.
+	var fly_tween = ball.create_tween()
+	var travel_dist = ball.global_position.distance_to(flag.global_position)
+	var fly_time = clampf(travel_dist * 0.003, 0.1, 0.4)
+	var from_pos := ball.global_position
+	var mid_point = (ball.global_position + flag.global_position) / 2.0
+	mid_point.y += travel_dist * 0.15
+	_spawn_pinball_beam(from_pos, flag.global_position, fly_time * 2.0)
+	fly_tween.tween_property(ball, "global_position", mid_point, fly_time * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	fly_tween.tween_property(ball, "global_position", flag.global_position, fly_time * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	fly_tween.finished.connect(_on_pinball_arrived.bind(ball, flags, index))
+
+func _on_pinball_arrived(ball: RigidBody3D, flags: Array, index: int) -> void:
+	if not _is_shot_current(ball) or not is_instance_valid(flags[index]) or not flags[index].can_process():
+		return
+	var flag: Node3D = flags[index]
+	var context: Dictionary = ball.shot_context
+	# cash this flag hit
+	AudioManager.play_sfx("flag_stick")
+	flag._wiggle()
+	_spawn_pinball_bumper_flash(flag.global_position)
+	_register_direct_hit()
+	var flag_bonus := RewardRules.flag_bonus(flag.global_position.z, flag.distance_mult)
+	var reward := RewardRules.pinball(context, flag_bonus)
+	GameState.credit_reward(reward)
+
+	var pin_yards = flag.global_position.distance_to(tee_position.global_position) * 1.094
+	_text_queue.append({"money": reward.money, "yards": pin_yards, "flag_hit": true, "direct_hit": true})
+	_spawn_pinball_score_pop(flag.global_position, reward.money)
+	if not _queue_processing:
+		_process_text_queue()
+
+	# check golden flag
+	if flag._is_golden:
+		flag.golden_hit.emit(flag, flag_bonus, context, 1.0)
+		flag.deactivate_golden()
+	_advance_pinball_chain(ball, flags, index + 1)
 
 func _cashout_all_investments() -> float:
-	var total := 0.0
-	for flag in _market_investments:
-		total += _market_investments[flag]
-		_spawn_cashout_particles_from_flag(flag, _market_investments[flag])
-		_remove_market_label(flag)
-	_market_investments.clear()
-	_market_streak_flag = null
-	_market_streak_count = 0
-	return total
+	for key in GameState.market.pots:
+		var flag = _market_flags.get(key)
+		if is_instance_valid(flag):
+			_spawn_cashout_particles_from_flag(flag, GameState.market.pots[key].money)
+			_remove_market_label(flag)
+	return GameState.cashout_market().money
 
 func _update_market_label(flag: Node3D, pulse: bool = false) -> void:
 	if not is_instance_valid(flag):
 		return
-	var amount = float(_market_investments.get(flag, 0.0))
+	var amount: float = GameState.market.pots.get(_market_key(flag), {"money": 0.0}).money
 	if flag not in _market_labels:
 		var label = Label3D.new()
 		label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -740,16 +753,17 @@ func _spawn_golden_flag() -> void:
 	_golden_flag = flags[randi() % flags.size()]
 	_golden_flag.activate_golden()
 
-func _on_golden_flag_hit(flag: Node3D, bonus: float) -> void:
-	var final_money = bonus * GameState.get_money_mult()
-	GameState.money += final_money
-	GameState.lifetime_money += final_money
-	GameState.money_changed.emit(GameState.money)
-	GameState.add_xp(final_money * 0.1)
+func _on_golden_flag_hit(flag: Node3D, bonus: float, context: Dictionary, payout_multiplier: float) -> void:
+	if not is_instance_valid(flag) or not flag.can_process() or flag.get_parent() != _get_active_flags():
+		return
+	if context.get("course_revision", -1) != _course_revision or context.get("course_id", "") != GameState.equipped_course:
+		return
+	var reward := RewardRules.golden(context, bonus, payout_multiplier)
+	GameState.credit_reward(reward)
 	_golden_flag = null
 
 	# show golden cashout text
-	_text_queue.append({"money": final_money, "yards": 0.0, "flag_hit": true, "direct_hit": true, "golden": true})
+	_text_queue.append({"money": reward.money, "yards": 0.0, "flag_hit": true, "direct_hit": true, "golden": true})
 	if not _queue_processing:
 		_process_text_queue()
 
@@ -766,38 +780,35 @@ func _get_dynamic_lifetime() -> float:
 	return clampf(1.0 - pressure * 0.1, 0.3, 1.0)
 
 func _process_text_queue() -> void:
+	# A scene-owned timer callback is cancelled with this scene. Suspending an
+	# await here left a timeout StringName behind when quitting during payouts.
+	if _text_queue.is_empty():
+		_queue_processing = false
+		_queue_batch_remaining = -1
+		return
 	_queue_processing = true
-	while _text_queue.size() > 0:
-		# if queue is overflowing, batch the extras into a summary
-		if _text_queue.size() > MAX_INDIVIDUAL_TEXTS:
-			# show first few individually
-			for i in MAX_INDIVIDUAL_TEXTS:
-				if _text_queue.size() == 0:
-					break
-				var data = _text_queue.pop_front()
-				_spawn_floating_text(data["money"], data["yards"], data.get("flag_hit", false), data.get("direct_hit", false), data.get("invested", false), data.get("cashout", 0.0), data.get("golden", false))
-				await get_tree().create_timer(TEXT_QUEUE_INTERVAL).timeout
-
-			# collapse everything remaining into one summary
-			if _text_queue.size() > 0:
-				var total_money := 0.0
-				var hit_count := _text_queue.size()
-				var any_flag := false
-				var any_direct := false
-				for data in _text_queue:
-					total_money += data["money"]
-					if data.get("direct_hit", false):
-						any_direct = true
-					elif data.get("flag_hit", false):
-						any_flag = true
-				_text_queue.clear()
-				_spawn_summary_text(total_money, hit_count, any_flag, any_direct)
-				await get_tree().create_timer(TEXT_QUEUE_INTERVAL).timeout
-		else:
-			var data = _text_queue.pop_front()
-			_spawn_floating_text(data["money"], data["yards"], data.get("flag_hit", false), data.get("direct_hit", false), data.get("invested", false), data.get("cashout", 0.0), data.get("golden", false))
-			await get_tree().create_timer(TEXT_QUEUE_INTERVAL).timeout
-	_queue_processing = false
+	if _queue_batch_remaining < 0 and _text_queue.size() > MAX_INDIVIDUAL_TEXTS:
+		_queue_batch_remaining = MAX_INDIVIDUAL_TEXTS
+	if _queue_batch_remaining == 0:
+		var total_money := 0.0
+		var hit_count := _text_queue.size()
+		var any_flag := false
+		var any_direct := false
+		for data in _text_queue:
+			total_money += data["money"]
+			if data.get("direct_hit", false):
+				any_direct = true
+			elif data.get("flag_hit", false):
+				any_flag = true
+		_text_queue.clear()
+		_spawn_summary_text(total_money, hit_count, any_flag, any_direct)
+		_queue_batch_remaining = -1
+	else:
+		var data = _text_queue.pop_front()
+		_spawn_floating_text(data["money"], data["yards"], data.get("flag_hit", false), data.get("direct_hit", false), data.get("invested", false), data.get("cashout", 0.0), data.get("golden", false))
+		if _queue_batch_remaining > 0:
+			_queue_batch_remaining -= 1
+	_scene_timer(TEXT_QUEUE_INTERVAL).timeout.connect(_process_text_queue)
 
 
 func _push_existing_texts_up() -> void:
@@ -870,7 +881,9 @@ func _on_reset_pressed() -> void:
 	reset_dialog.visible = true
 
 func _on_confirm_reset() -> void:
-	GameState.full_reset()
+	if not GameState.full_reset():
+		reset_dialog.visible = false
+		return
 	get_tree().reload_current_scene()
 
 func _on_cancel_reset() -> void:
@@ -882,6 +895,7 @@ func _apply_saved_runtime_settings() -> void:
 		GameState.window_size = _format_window_size(WINDOWED_RESOLUTIONS[1])
 	AudioManager.set_sfx_muted(GameState.sfx_muted)
 	AudioManager.set_music_muted(GameState.music_muted)
+	AudioManager.set_shop_open(false)
 	_apply_display_settings()
 
 func _apply_display_settings() -> void:
@@ -923,7 +937,7 @@ func _apply_windowed_size(window_size: Vector2i) -> void:
 	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, false)
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 	_finish_windowed_resize.call_deferred(window_size)
-	get_tree().create_timer(0.20).timeout.connect(_finish_windowed_resize.bind(window_size))
+	_scene_timer(0.20).timeout.connect(_finish_windowed_resize.bind(window_size))
 
 func _finish_windowed_resize(window_size: Vector2i) -> void:
 	if DisplayServer.get_name() == "headless":
@@ -1215,10 +1229,7 @@ func _setup_settings_menu() -> void:
 		GameState.save()
 	)
 
-	exit_btn.pressed.connect(func():
-		GameState.save()
-		get_tree().quit()
-	)
+	exit_btn.pressed.connect(GameState.request_quit)
 
 	reset_btn.pressed.connect(func():
 		_settings_panel.visible = false
@@ -1347,7 +1358,7 @@ func _setup_help_button_wiggle() -> void:
 	_help_wiggle_timer.autostart = true
 	_help_wiggle_timer.timeout.connect(_play_help_button_wiggle)
 	add_child(_help_wiggle_timer)
-	get_tree().create_timer(0.7).timeout.connect(_play_help_button_wiggle)
+	_scene_timer(0.7).timeout.connect(_play_help_button_wiggle)
 
 func _mark_help_button_clicked() -> void:
 	if GameState.has_clicked_help_button:
@@ -1434,6 +1445,9 @@ func _add_help_section(category_name: String, body: String, font: Font) -> void:
 	section.add_child(text)
 
 func _build_help_pages() -> Array:
+	var ball_rewards := PackedStringArray()
+	for data in GameState.balls.values():
+		ball_rewards.append("%s: %sx money, %sx flag bonus, %sx destructible money." % [data.name, data.money_mult, data.get("flag_mult", 1.0), data.get("destruct_mult", 1.0)])
 	return [
 		{
 			"title": "Basics",
@@ -1448,8 +1462,8 @@ func _build_help_pages() -> Array:
 		{
 			"title": "Upgrades",
 			"sections": [
-				{"category": "Cash Upgrades", "text": "Cash cost = base cost x 1.08^current level.\nBall Speed: total speed = (1 + level x 0.04) x level bonus x golfer speed.\nFire Rate: total fire rate = (1 + level x 0.03) x level bonus x golfer fire rate. Swing timer = 5 / total fire rate.\nMoney Multiplier: total money = (1 + level x 0.09) x level bonus x golfer money.\nXP Multiplier: total XP = (1 + level x 0.09) x level bonus. XP gained = final money x 0.1 x total XP.\nConsistency: total consistency = (0.5 + level x 0.1) x level bonus x medal bonus. Higher consistency tightens spread and lowers whiffs."},
-				{"category": "Medal Upgrades", "text": "Flat Distance: +1 flat distance per level, added directly to horizontal shot speed. Cost = 8 x 1.8^level medals.\nMulti Ball: +1 ball per level. Ball count = 1 + level. Cost = 150 x 3^level medals. Max level 3.\nMulti Ball Spread: reduces fan spread by 2 degrees per level. Spread = max(8, 20 - level x 2). Cost = 75 x 1.9^level medals. Max level 6.\nConsistency Mult: +50% consistency per level. Medal multiplier = 1 + level x 0.5. Cost = 100 x 2^level medals. Max level 10."},
+				{"category": "Cash Upgrades", "text": "Most cash upgrades rise by 8% per level. Ball Speed uses a gentler late-game price curve; the shop shows the current price.\nBall Speed: total speed = (1 + level x 0.04) x level bonus x golfer speed.\nFire Rate: total fire rate = (1 + level x 0.03) x level bonus x golfer fire rate. Swing timer = 5 / total fire rate.\nMoney Multiplier: total money = (1 + level x 0.09) x level bonus x golfer money x ball money.\nXP Multiplier: total XP = (1 + level x 0.09) x level bonus. XP gained = final money x 0.1 x total XP.\nConsistency: total consistency = (0.5 + level x 0.1) x level bonus x medal bonus. Higher consistency tightens spread and lowers whiffs."},
+				{"category": "Medal Upgrades", "text": "Flat Distance: +1 flat distance per level, added directly to horizontal shot speed. Cost starts at 8 medals and rises by 4 each level.\nMulti Ball: +1 ball per level. Ball count = 1 + level. Costs 100, 175, then 250 medals. Max level 3.\nMulti Ball Spread: reduces fan spread by 2 degrees per level. Spread = max(8, 20 - level x 2). Cost starts at 20 medals and rises by 10 each level. Max level 6.\nConsistency Mult: +50% consistency per level. Medal multiplier = 1 + level x 0.5. Cost starts at 25 medals and rises by 25 each level. Max level 10."},
 				{"category": "How To Earn Medals?", "text": "Retire a strong run to turn progress into medals. The first medal payout scales with lifetime money. After that, medals are earned when the current run beats your best run money, with bigger improvements paying more and a soft cap toward 250 medals."},
 				{"category": "Retirement", "text": "Retiring resets run money and cash upgrades. Levels, unlocks, balls, golfers, courses, and medal upgrades stay."},
 			],
@@ -1459,14 +1473,17 @@ func _build_help_pages() -> Array:
 			"sections": [
 				{"category": "Golf Balls", "text": "Balls change the rules of the shot. Standard is reliable, Pin Seeker boosts flags, and Firework splits into scoring fragments."},
 				{"category": "Golfers", "text": "Golfers change passive stats. Standard Golfer is balanced, Shop Keep earns extra money, and Lion Trees adds money plus distance."},
-				{"category": "Courses", "text": "Courses change the playable layout and targets. Big Piney is the first course."},
+				{"category": "Courses", "text": "Courses change the playable layout and targets. Switching courses clears balls still in play; rewards already earned are kept. Big Piney is the first course."},
+				{"category": "Changing Equipment", "text": "Balls keep the equipment and upgrade bonuses they had at launch. Changing equipment or buying upgrades affects new shots."},
+				{"category": "Market Investments", "text": "Market pots and streaks are saved. Deposit streak bonuses stop growing at 10x. Investments grow slowly, sharing a $5-per-second interest limit. Growth resumes while playing, with no growth while the game is closed. Switching courses cashes out your pots. Retirement cashes them out before calculating medals and run records."},
 			],
 		},
 		{
 			"title": "Bonus Money",
 			"sections": [
 				{"category": "Flags", "text": "Landing near a flag adds bonus money. A direct hit pays more and can trigger special ball effects."},
-				{"category": "Golden Flags", "text": "A random flag can turn golden. Directly hitting it creates a large bonus payout."},
+				{"category": "Golden Flags", "text": "A direct hit on a golden flag adds 50x its accuracy-adjusted flag bonus, including your ball's flag bonus and money multipliers. This is separate from the ordinary direct-hit payout."},
+				{"category": "Ball Reward Multipliers", "text": "\n".join(ball_rewards)},
 				{"category": "Hole-Out Combo", "text": "Back-to-back direct flag hits build a combo banner and celebrate clean accuracy."},
 				{"category": "Destructibles", "text": "Some course objects take repeated hits, pay out when destroyed, and return after a respawn timer."},
 				{"category": "Bonus Money", "text": "Base shot payout = yards^2 x 0.0002 + 5. Flag bonuses are added to that base, direct hits multiply the result by 2.5, and money multipliers apply last."},
@@ -1847,7 +1864,7 @@ func _show_target_destroyed_banner() -> void:
 	banner.add_child(lbl)
 
 	AudioManager.play_sfx("beep")
-	get_tree().create_timer(0.12).timeout.connect(func(): AudioManager.play_sfx("beep"))
+	_scene_timer(0.12).timeout.connect(func(): AudioManager.play_sfx("beep"))
 	# 4 corner brackets — start offscreen direction, travel inward
 	var bracket_chars := ["┌", "┐", "└", "┘"]
 	var corners := [

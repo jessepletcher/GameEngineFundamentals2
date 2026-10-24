@@ -1,0 +1,93 @@
+MARKET INVESTMENT PERSISTENCE - B10
+October 23, 2026
+
+Historical B10 report. B11 audio reliability is now implemented; see
+AUDIO_RELIABILITY_UPDATE.txt for current mute/shop/ambience behavior and tests.
+
+Completed in source with Godot 4.6 stable. Existing Windows exports must be rebuilt
+to include B06-B10. No export, Steam upload or new native visual QA was performed.
+
+Player behavior
+
+- Saves preserve each flag's invested money, accrued XP and the most recent
+  same-flag streak. Both autosave and normal save-and-quit include this state.
+- Loading restores the pot labels and streak on the same course. Pots are not
+  cashed out merely by constructing a new scene. They resume normal growth while
+  playing; no offline growth is added. Existing growth rate/balance is unchanged.
+- Ordinary cashout and course changes credit the same accumulated money/XP once.
+  Current equipment and XP upgrades do not reprice saved contributions.
+- Retirement cashes out investments before calculating medals and best-run records.
+  Accrued XP is awarded and resulting levels are retained under existing retirement
+  rules. Run money, run counters, cash upgrades and pots then reset together.
+- The retirement dialog includes the pot in its medal preview, updates while open,
+  and explains the cashout policy. Cancelling the dialog does not cash out anything.
+- Retirement only reloads the scene after its save succeeds. On failure the entire
+  prior state is restored, including pots, streak, money, XP, levels, upgrades,
+  medals and records, so retrying cannot consume or duplicate the investment.
+- Full reset clears investments; a failed reset restores them. Reset backup rules
+  prevent pre-reset investments being automatically resurrected.
+- If a saved flag is removed/renamed or belongs to an unavailable/inactive course,
+  restoration cashes out the pots safely instead of stranding or deleting funds.
+
+Save compatibility and recovery
+
+SaveStore version is now 2. The market section contains pots (dictionary keyed by
+course/flag name), streak_key and streak_count. Each pot stores finalized money
+and XP, with no references to live scene nodes. Example key: course1/BlackFlag.
+Authored flag names act as save identities. Renaming one uses the safe cashout
+fallback unless a deliberate identity migration is added.
+
+Version 0 legacy saves and checksummed version 1 saves migrate to empty Market
+state, because those versions never persisted investments. Original bytes remain
+untouched on read and are preserved by the normal verified backup on next save.
+Version 1 checksum and required-field checks remain enforced. Newer unsupported
+save versions still block writes. Existing older builds will treat v2 saves as
+newer data and refuse to overwrite them.
+
+Version 2 requires complete Market fields and validates dictionary structure,
+target identity, finite nonnegative money/XP, finite totals, integer streak range,
+and consistency between the streak and pots. Malformed state is rejected through
+the established recovery/protected-save flow rather than silently emptied.
+
+The entire balance and ledger are in the same checksummed atomic save, so backup
+recovery restores a matching pre-cashout balance/pot or a post-cashout balance with
+an empty pot. Failed quit, retry and explicit discard keep their established
+semantics. Forced termination recovers the last successful checkpoint; unsaved
+growth since that checkpoint is not guaranteed, just like other recent progress.
+
+Implementation
+
+idle-golf/MarketLedger.gd owns scene-independent pots, streaks, growth, totals and
+validation. RewardRules still supplies finalized money/XP and scales deposits.
+GameState owns the ledger, serializes deep snapshots, restores it, credits cashout,
+and handles retirement/reset rollback. Main maps stable keys to current flag nodes
+for labels/effects and distinguishes scene initialization from a course switch.
+SaveStore validates/migrates the new schema before exposing it to gameplay.
+
+Validation
+
+python tests/run_course_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  71 Market checks: v1 migration and backup retention; malformed signed records;
+  real deposits, growth, save/reload and labels; streak continuation; multiple
+  flag pots; course cashout; no duplicate credit after reload; corrupted-primary
+  recovery; removed/inactive targets; retirement preview/records/levels; failed
+  retirement rollback and retry; reset rollback and clean reset backup.
+  Existing 3,106 course/shot/reward/cosmetic checks also passed (3,177 total).
+  No unexpected engine errors or leaked-instance warnings.
+  Logs: .test-output/course-tests/20261023-124713-7848ca/
+
+python tests/run_save_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  All 166 save assertions, close/Exit/retry/discard, forced-stop recovery and the
+  600-frame main-scene smoke test passed. Quit probes now also verify Market
+  money, XP and streak across separate processes, including failed-save retry,
+  discarded unsaved changes, and committed versus unsaved crash-worker pots.
+  Logs: .test-output/save-tests/20261023-124517-8c1f6c/
+
+All tests used disposable projects/profiles; actual player saves were untouched.
+
+Next release work
+
+B11: mute-on-start/unmute and ambience restart behavior.
+C03 still includes Market's 10% description versus its existing 20% growth rate
+and other mechanic/copy discrepancies. B10 preserves current balance and does not
+choose a new offline-earnings policy for the rest of the game (A03).

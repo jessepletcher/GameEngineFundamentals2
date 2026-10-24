@@ -1,6 +1,7 @@
 extends Node3D
+const RewardRules = preload("res://RewardRules.gd")
 
-signal golden_hit(flag: Node3D, bonus: float)
+signal golden_hit(flag: Node3D, bonus: float, shot_context: Dictionary, payout_multiplier: float)
 
 @export var radius_x: float = 5.0     # hit detection width
 @export var radius_z: float = 5.0     # hit detection depth
@@ -73,7 +74,9 @@ func _ready() -> void:
 	distance_label.font = load("res://balatro.otf")
 
 ## Returns [bonus, is_direct_hit]
-func check_hit(ball_position: Vector3) -> Array:
+func check_hit(ball_position: Vector3, shot_context: Dictionary = {}, payout_multiplier: float = 1.0) -> Array:
+	if not can_process():
+		return [0.0, false]
 	var dx = abs(ball_position.x - global_position.x)
 	var dz = abs(ball_position.z - global_position.z)
 
@@ -81,21 +84,21 @@ func check_hit(ball_position: Vector3) -> Array:
 		return [0.0, false]
 
 	var accuracy = 1.0 - max(dx / radius_x, dz / radius_z)
-	var distance_bonus = global_position.z * 0.1
-	var bonus = accuracy * distance_bonus * distance_mult
+	var bonus := RewardRules.flag_bonus(global_position.z, distance_mult, accuracy)
 
 	var direct = dx <= direct_radius_x and dz <= direct_radius_z
 	if direct:
 		AudioManager.play_sfx("flag_stick")
 		_wiggle()
 		if _is_golden:
-			var golden_bonus = bonus * 50.0
-			golden_hit.emit(self, golden_bonus)
+			golden_hit.emit(self, bonus, shot_context, payout_multiplier)
 			deactivate_golden()
 
 	return [bonus, direct]
 
 func activate_golden() -> void:
+	if not can_process():
+		return
 	_is_golden = true
 	if _golden_tween and _golden_tween.is_valid():
 		_golden_tween.kill()
@@ -150,6 +153,8 @@ func _clear_golden_letters() -> void:
 	_golden_total_width = 0.0
 
 func _wiggle() -> void:
+	if not can_process():
+		return
 	if _wiggle_tween and _wiggle_tween.is_valid():
 		_wiggle_tween.kill()
 	sprite.rotation.z = 0.0

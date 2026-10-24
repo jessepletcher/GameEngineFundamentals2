@@ -1,0 +1,97 @@
+C06 - SAVED COMPLETION AND WINDOWS PLAYTEST
+October 23, 2026
+
+Implemented
+
+Destroying the active course's final target records that course as beaten and
+saves immediately. All three saved milestones together mark the game complete.
+The source must be an actually destroyed final target in the active course's
+scene branch, with the expected stable target ID. A partial hit, ordinary target,
+inactive source, repeated event or paid-course completion in the demo cannot
+grant a new milestone.
+
+Final goals: Big Piney / Mountain; Desert / Pyramids; Beach / Lighthouse.
+The top-center progress button shows courses beaten and opens the goal list.
+New victories show course completion or Game complete, with Keep playing.
+Loading an already completed save restores the status without replaying victory.
+
+Milestones survive respawns, switching, restarting and retirement. Confirmed
+Reset Game clears them; a failed reset rolls back to the previous milestones.
+Save schema 3 adds strict boolean completion fields. Versions 0/1/2 migrate with
+all milestones false because old saves contain no evidence of target destruction.
+Game completion is derived from all three flags, avoiding contradictory state.
+Demo-to-full import retains a previously earned demo course-1 milestone.
+
+If the completion write fails, the earned milestone stays in memory and the
+existing warning, autosave retry and protected quit flow apply. The UI warns
+that progress may not be saved. No silent loss or false saved-success message.
+
+Windows builds ready for testing
+
+Build folder: idle-golf/builds/windows/20261023-142628-3a6e3c/
+  full/IdleGolf.exe                       Normal full-game progression
+  demo/IdleGolf_Demo.exe                  Normal demo
+  completion-test/Test Completion.cmd    Isolated completion test launcher
+
+Double-click Test Completion.cmd, choose a course, click Set up final shot, then
+Shoot. Allow roughly 15-25 seconds for the ball to arrive. Complete each course,
+close/reopen the launcher, and use the progress button to check saved milestones.
+Reset test progress starts the test over and leaves the test controls usable.
+
+The launcher uses a byte-identical copy of the full-game executable plus an
+external test scene. Nothing enables test controls in the normal game/PCK.
+The test setup unlocks courses, supplies upgraded shot stats, pre-aims the shot,
+and leaves the final target one hit from destruction. It does not grant victories
+directly: the real launcher, physics, target destruction and saving paths run.
+Additional test speed is supplied through XP bonuses so the deliberately elevated
+stats do not overflow the existing upgrade-price HUD.
+
+Test saves live under completion-test/profile/appdata/IdleGolfCompletionPlaytest/.
+The launcher isolates APPDATA, LOCALAPPDATA and temporary files; a custom user
+directory adds separation from normal saves. Neither normal demo nor full-game
+saves are loaded or changed. Automated verification uses another separate profile,
+so the interactive test starts fresh. Keep the launcher folder's files together;
+its script regenerates external scene paths when the folder is moved.
+
+Verification
+
+Required pipeline:
+  python tools/export_windows.py --godot <Godot 4.6 executable>
+  Passed source gates, both release exports, packaged runtime gates, and the
+  completion-test package checks. No game source edits followed this snapshot.
+  Logs: .test-output/windows-export/20261023-142628-3a6e3c/
+
+Source checks:
+  10 diagnostic-gate tests; clean demo/full imports and runtimes;
+  166 save assertions plus quit/failure/forced-stop stages;
+  3,899 gameplay assertions (including 53 completion checks);
+  91 audio PCM assertions.
+  Completion coverage includes migration, strict fields, wrong/partial/inactive
+  events, immediate persistence, duplicates, respawn, restart, retirement,
+  reset, failed completion writes, retry, failed reset rollback and demo limits.
+  Course suite: .test-output/course-tests/20261023-142716-56c838/
+
+Packaged runtime:
+  .test-output/export-tests/20261023-142820-29eaa5/
+  Existing save/quit, demo/full isolation, backup, forced-stop and main-scene
+  checks passed against the exported executable copies.
+
+Completion package (refreshed after visual placement refinement):
+  16 assertions in four separate processes: complete, reload, reset, verify-reset.
+  Real shots beat all three targets. Restart/retirement retain game completion.
+  The actual Reset test progress handler clears milestones and rebuilds its UI;
+  another restart confirms the cleared save. Logs are in completion-test/.
+
+Rendered review uses a byte-identical exported full-game executable, the same test
+driver with screenshot/teardown instrumentation, and a separate disposable profile:
+  .test-output/completion-visual/20261023-142628-3a6e3c-final/
+  game-complete.png and rendered-completion.log.
+  The test controls are below the completion panel, leaving Keep playing usable.
+  The accelerated rendered harness drains the audio thread before exiting;
+  diagnostic validation remains strict.
+
+Remaining
+
+C05/C08: affordable progression and approximately 20 hours per course. Test setup
+is a shortcut for verification, not a balance simulation or pacing promise.
+Steam integration, macOS/Linux packaging and platform QA remain separate tasks.

@@ -1,0 +1,70 @@
+SAVE PROTECTION AND QUITTING IMPLEMENTATION
+October 22, 2026 - first release-checklist implementation batch
+
+Completed in source: B01, B02 and B03. The existing demo filename is unchanged;
+demo/full product separation and Market Ball investment accounting remain open.
+
+Behavior now implemented
+
+- Read and validate a complete candidate before applying any progress to GameState.
+- Accept the known unversioned demo format and fill optional missing fields from
+  fresh defaults. The next successful save upgrades it to schema version 1.
+- Add a leading version/checksum header so parseable truncation is detected.
+- Write and verify a sibling .tmp file; prepare a byte-verified .bak; replace the
+  primary by rename without deleting it first. Errors leave recoverable copies.
+- Prefer the committed primary on restart. If it is unavailable/corrupt, attempt
+  the pending write, backup, then staged backup. Preserve originals in uniquely
+  named .recovery-* files before enabling writes after recovery.
+- Block saving if no usable recovery exists or a selected save needs a newer game.
+- Show recovery/write-failure messages without reopening the same error every
+  autosave tick. Saving successfully clears the current failure notice.
+- Route both the window-close notification and Settings Exit through request_quit.
+  Save success exits; save failure offers retry, keep playing or explicit discard.
+- Archive existing files before confirmed reset. If saving the reset fails, restore
+  the current in-memory session. After a successful reset the normal backup also
+  contains reset progress, preventing automatic resurrection of the pre-reset game.
+- Replace GameState's UID autoload reference with its resource path, resolving the
+  initial clean-import script failures encountered during the audit.
+
+Implementation locations
+
+idle-golf/SaveStore.gd: filesystem operations, schema validation, checksums/recovery.
+idle-golf/GameState.gd: save snapshots, validated loading, reset and quit UI behavior.
+idle-golf/main.gd: Settings Exit routing and handling a reset failure.
+tests/: isolated Godot regression suite, subprocess quit probes and legacy fixture.
+
+Validation result
+
+Godot 4.6.stable.official.89cea1439 on Windows: 135 regression assertions passed.
+Additional subprocess checks passed for close notification, Exit, failed-close
+retry, explicit discard, forced-process termination/reload and 120-frame main-scene
+headless startup. Clean import had no script parse/load errors. Its editor profiler
+still reported an inaccessible user:// directory in the sandbox.
+
+The runner used copied game files and redirected test saves. Actual player saves
+were not touched. Logs are generated beneath .test-output/save-tests (git-ignored).
+Use tests/README.txt to repeat the suite. Original audit logs remain historical
+evidence in release-planning/validation and are not the results of these new tests.
+
+Remaining release QA and scope
+
+- Visually verify dialogs and native X/Alt+F4 on the exported game, including low
+  resolutions; test real locked files/permissions and Steam shutdown on target PCs.
+- Preserve the 15-second autosave policy: an abrupt kill can lose unsaved progress.
+  This batch proves recovery of the last committed checkpoint, not power-loss
+  durability on every storage device or save locking across concurrent instances.
+- Version-0 saves had no integrity header. Structural validation and backups help,
+  but cannot prove that every otherwise plausible legacy value is uncorrupted.
+- Migration/separation for the eventual paid product, Cloud/account isolation and
+  Market Ball pots are separate tasks; they are not claimed complete here.
+- Existing packaged demo executables were not rebuilt or published. These changes
+  must be exported and verified through the release pipeline before distribution.
+
+Recovery guidance
+
+With the game closed, preserve the entire save folder before manual recovery.
+The primary is idle_golf_demo_v0_1.cfg; .bak is the normal backup. A .tmp or .bak.tmp
+can remain after an interrupted write. Recovery/reset archives use .recovery-*.
+Do not edit checksummed saves in place: recover a complete known-good file instead.
+Keep archives until progress is verified; the game does not automatically delete
+those diagnostic/recovery copies. Reset remains an explicit player decision.

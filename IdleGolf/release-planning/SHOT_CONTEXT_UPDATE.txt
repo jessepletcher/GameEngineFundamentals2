@@ -1,0 +1,66 @@
+AIRBORNE SHOT CONSISTENCY - B07
+October 23, 2026
+
+Historical B07 report. B08 now applies catalog ball money multipliers and uses
+shared payout rules; see REWARD_RULES_UPDATE.txt for current reward behavior.
+
+Completed in source for the current seven-ball, three-course catalog, using the
+installed Godot 4.6 stable engine. Existing Windows exports are unchanged and must
+be rebuilt to include B06 and B07. No deployment/upload or native visual QA was
+performed for this batch.
+
+Player-facing policy
+
+- Equipment changes and purchased upgrades affect future shots. Each launched
+  volley captures its ball, golfer, course revision, launch settings and reward/XP
+  multipliers. Later equipment changes or level-ups cannot reprice that shot.
+- Firework fragments inherit the parent's context, including payout compensation
+  when distant fireworks use fewer scoring fragments. Pinball chains retain the
+  original ball's behavior and rewards throughout the chain.
+- Course switching immediately cancels every outgoing ball, scoring/cosmetic
+  fragment and pinball chain. Cancelled objects lose collision and group membership
+  before deferred deletion; returning to the original course cannot revive them.
+  Already earned money and XP remain. Cancelled shots receive no new payout.
+- Partially damaged destructibles retain each hit's original money/XP contribution
+  through course visits. Destruction pays their sum. The finishing shot's golfer
+  determines respawn delay. Respawns reset these contributions.
+- Market deposits retain their originating XP multiplier through growth and later
+  cashout, including course-switch cashout. Cashout clears both money and XP once.
+- In-game help explains equipment and course switching.
+
+Implementation
+
+GameState.capture_shot_context creates read-only snapshots; add_xp can accept an
+explicit captured multiplier. Main launches and Ball fragments share the snapshot.
+Landing, golden, pinball and destructible rewards use that context. Landing has a
+duplicate-payment guard. Course revision and cancelled-state checks reject stale
+callbacks. Pinball uses ball-bound tweens with completion callbacks so cancellation
+does not strand an awaiting coroutine. Delayed landing cleanup uses a target-bound
+callable that automatically disconnects when the ball is freed.
+
+Validation
+
+python tests/run_course_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  420 course checks: 140 from each starting course, with actual physics queries.
+  86 shot-context checks covering all seven ball types, changing equipment and
+  upgrades, golden-triggered level-up, pinball, firework variants, mixed impacts,
+  Market growth/cashout/course-switch XP, multiball and stale callback rejection.
+  The runner rejects unexpected engine errors and leaked-instance warnings.
+  Logs: .test-output/course-tests/20261023-122847-9f78e3/
+
+python tests/run_save_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  166 save assertions passed, plus close/Exit/retry/discard, killed-process recovery
+  and a 600-frame main-scene smoke test.
+  Logs: .test-output/save-tests/20261023-122806-7973d3/
+
+Tests use disposable projects/profiles. Actual player saves were not touched.
+
+Remaining release work
+
+B08 still owns correcting/centralizing all reward multipliers; this batch freezes
+the current formulas at launch and does not fix missing catalog money multipliers.
+B09 still owns removing cosmetic-fragment gameplay damage/collisions. B07 cancels
+those fragments at course changes but does not alter their active-course behavior.
+B10 still owns Market save/reload and retirement persistence. Shot snapshots and
+partially accumulated destructible rewards are runtime state, not new save fields.
+Balance and ball-description discrepancies remain part of B08/C03.

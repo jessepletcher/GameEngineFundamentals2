@@ -1,0 +1,44 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-23",
+  "prompts": [
+    {
+      "name": "DysonSwing",
+      "prompt": "Use case: stylized-concept. Asset: production pixel-art golf swing sprite sheet for an existing game. The first input is a STYLE AND POSE SEQUENCE reference, not a background. Create ONE extremely wide horizontal strip with EXACTLY FIVE equal square cells in one row, transparent background, no labels, no grid lines. Each cell contains one full-body golfer and their golf club, with generous transparent space around them. Same character, size, viewpoint and feet baseline in all five cells. Low-resolution crisp pixel art matching the supplied 96px character style, limited colors, no antialiasing or soft painting. Golfer faces screen-right in three-quarter side view. Sequence left-to-right: (1) address at rest, (2) backswing, (3) club at top of backswing, (4) downswing/contact with club near ground to the right, (5) follow-through. No golf ball. Keep all character and club pixels inside each respective cell. Preferred canvas 960x192 or a 5:1 aspect ratio; exactly one row. Character: a sturdy athletic adult golfer in a dark teal polo, light stone trousers and a dark navy baseball cap; distinct from the blue-shirt reference. Consistent human proportions and readable silhouette.",
+      "refs": [
+        "C:/Users/43bat/Documents/GitHub/GameEngineFundamentals/IdleGolf/idle-golf/GolfSwing-Sheet.png"
+      ]
+    },
+    {
+      "name": "BlueCollarSwing",
+      "prompt": "Use case: stylized-concept. Asset: production pixel-art golf swing sprite sheet for an existing game. The first input is a STYLE AND POSE SEQUENCE reference, not a background. Create ONE extremely wide horizontal strip with EXACTLY FIVE equal square cells in one row, transparent background, no labels, no grid lines. Each cell contains one full-body golfer and their golf club, with generous transparent space around them. Same character, size, viewpoint and feet baseline in all five cells. Low-resolution crisp pixel art matching the supplied 96px character style, limited colors, no antialiasing or soft painting. Golfer faces screen-right in three-quarter side view. Sequence left-to-right: (1) address at rest, (2) backswing, (3) club at top of backswing, (4) downswing/contact with club near ground to the right, (5) follow-through. No golf ball. Keep all character and club pixels inside each respective cell. Preferred canvas 960x192 or a 5:1 aspect ratio; exactly one row. Character: an adult construction-worker golfer wearing a yellow hard hat, orange work shirt and navy work trousers with brown boots. One ordinary golf club, no tools or props. Consistent human proportions and readable silhouette.",
+      "refs": [
+        "C:/Users/43bat/Documents/GitHub/GameEngineFundamentals/IdleGolf/idle-golf/GolfSwing-Sheet.png"
+      ]
+    },
+    {
+      "name": "ZoomerSwing",
+      "prompt": "Use case: stylized-concept. Asset: production pixel-art golf swing sprite sheet for an existing game. The first input is a STYLE AND POSE SEQUENCE reference, not a background. Create ONE extremely wide horizontal strip with EXACTLY FIVE equal square cells in one row, transparent background, no labels, no grid lines. Each cell contains one full-body golfer and their golf club, with generous transparent space around them. Same character, size, viewpoint and feet baseline in all five cells. Low-resolution crisp pixel art matching the supplied 96px character style, limited colors, no antialiasing or soft painting. Golfer faces screen-right in three-quarter side view. Sequence left-to-right: (1) address at rest, (2) backswing, (3) club at top of backswing, (4) downswing/contact with club near ground to the right, (5) follow-through. No golf ball. Keep all character and club pixels inside each respective cell. Preferred canvas 960x192 or a 5:1 aspect ratio; exactly one row. Second input is the CHARACTER IDENTITY reference. Preserve this slim golfer's pale green cap, striped pale green-and-white polo and brown shorts. Expand the single standing pose into the complete five-frame golf swing.",
+      "refs": [
+        "C:/Users/43bat/Documents/GitHub/GameEngineFundamentals/IdleGolf/idle-golf/GolfSwing-Sheet.png",
+        "C:/Users/43bat/Documents/GitHub/GameEngineFundamentals/IdleGolf/idle-golf/Golfer1.png"
+      ]
+    },
+    {
+      "name": "LambSwing",
+      "prompt": "Use case: stylized-concept. Asset: production pixel-art golf swing sprite sheet for an existing game. The first input is a STYLE AND POSE SEQUENCE reference, not a background. Create ONE extremely wide horizontal strip with EXACTLY FIVE equal square cells in one row, transparent background, no labels, no grid lines. Each cell contains one full-body golfer and their golf club, with generous transparent space around them. Same character, size, viewpoint and feet baseline in all five cells. Low-resolution crisp pixel art matching the supplied 96px character style, limited colors, no antialiasing or soft painting. Golfer faces screen-right in three-quarter side view. Sequence left-to-right: (1) address at rest, (2) backswing, (3) club at top of backswing, (4) downswing/contact with club near ground to the right, (5) follow-through. No golf ball. Keep all character and club pixels inside each respective cell. Preferred canvas 960x192 or a 5:1 aspect ratio; exactly one row. Second input is the CHARACTER IDENTITY reference. Preserve this golfer's light brimmed hat, pale pink shirt and purple shorts. Expand the single pose into the complete five-frame golf swing.",
+      "refs": [
+        "C:/Users/43bat/Documents/GitHub/GameEngineFundamentals/IdleGolf/idle-golf/GolfSwing-Sheet.png",
+        "C:/Users/43bat/Documents/GitHub/GameEngineFundamentals/IdleGolf/idle-golf/Golfer2.png"
+      ]
+    },
+    {
+      "name": "MoneyDailySwing",
+      "prompt": "Use case: stylized-concept. Asset: production pixel-art golf swing sprite sheet for an existing game. The first input is a STYLE AND POSE SEQUENCE reference, not a background. Create ONE extremely wide horizontal strip with EXACTLY FIVE equal square cells in one row, transparent background, no labels, no grid lines. Each cell contains one full-body golfer and their golf club, with generous transparent space around them. Same character, size, viewpoint and feet baseline in all five cells. Low-resolution crisp pixel art matching the supplied 96px character style, limited colors, no antialiasing or soft painting. Golfer faces screen-right in three-quarter side view. Sequence left-to-right: (1) address at rest, (2) backswing, (3) club at top of backswing, (4) downswing/contact with club near ground to the right, (5) follow-through. No golf ball. Keep all character and club pixels inside each respective cell. Preferred canvas 960x192 or a 5:1 aspect ratio; exactly one row. Second input is the CHARACTER IDENTITY reference. Preserve this golfer's turquoise sleeveless shirt, brown trousers and dark hair. Expand the single pose into the complete five-frame golf swing.",
+      "refs": [
+        "C:/Users/43bat/Documents/GitHub/GameEngineFundamentals/IdleGolf/idle-golf/GolfSwing-Sheet.png",
+        "C:/Users/43bat/Documents/GitHub/GameEngineFundamentals/IdleGolf/idle-golf/Golfer4.png"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+C01 - COURSE TARGETS
+October 23, 2026
+
+Superseded layout: see COURSE_LAYOUT_UPDATE.txt for the owner's subsequent
+corrections, removal of added Beach props and Cargo Ship completion target.
+The implementation/validation below records the original C01 batch.
+
+Implemented
+
+All three courses now contain five destructible targets. The final target is
+explicitly identified with target_id, target_name and is_final_target. Yardage
+labels identify it as "Final target". Scenery beyond it is not a completion goal.
+
+Course 1 / Big Piney retains its existing five targets and tuning. Its Mountain
+at z=1500 is the final target (500 hits), ID level1_destructible3.
+
+Desert targets (forward world distance, hits, base money per hit):
+  Cactus         45       5       2
+  Oil Pump      180      25       3
+  Tall Cactus   400      50       4
+  Blimp         800     100       7
+  Pyramids    2000     500      15   FINAL: level2_pyramids
+
+Beach targets:
+  Practice Target 25     5       2
+  Water Tower    220    25       3
+  Balloon        550    75       5
+  Cargo Ship    1000   150       8
+  Lighthouse    2400   500      15   FINAL: level3_lighthouse
+
+These distances are world-space forward Z, not displayed yards. The existing
+yardage conversion is 1.094. Final-target displays are approximately 1,641,
+2,188 and 2,625 yards respectively.
+
+Desert targets replace their original decorative instances. Cacti and the pump
+are offset away from the sidebar/shop. Each pyramid has a separate physical
+hitbox on its exposed face; all three share one damage count, payout and respawn.
+Destructible.gd now handles every CollisionShape3D under its StaticBody3D, while
+still counting each ball once per target life. Course isolation applies to all
+of these shapes. Existing damage/reward rules and save schema are unchanged.
+
+The beach uses its existing separate sky, water, island and fairway layers.
+BeachTarget.gdshader masks the ship and lighthouse out of the original composite
+illustration for independent rendering. The PNG is untouched. They disappear
+when broken, revealing clean scenery rather than another baked-in copy. Other
+beach targets reuse existing target, water-tower and balloon artwork.
+
+Verification
+
+python tests/run_course_tests.py --godot <Godot 4.6 executable>
+  PASS: 3,846 assertions, including 201 target-specific checks.
+  Logs: .test-output/course-tests/20261023-140951-c9247e/
+
+Reachability checks launch Standard Balls with the Standard Golfer through the
+real main._hit_ball path. They use legal aim/loft controls, normal gravity/damping,
+no teleporting, and no direct damage callbacks. Every one of the 17 hitboxes
+receives two actual shots. Other targets stay active after verified respawn.
+Partial-damage fixtures leave two hits per hitbox before the authored threshold;
+the final real hit must destroy the target and pay a reward. The tests also check
+all colliders disable, respawn clears damage, and all colliders restore. Existing
+course tests now query all hitboxes through repeated course switches.
+
+Test stats deliberately isolate geometry: consistency level 95, consistency medal
+level 10, zero XP stat bonuses, and finite cash speed upgrades. Final target speed
+levels in this fixture: Mountain 534, Pyramids 606-626 across its three faces,
+Lighthouse 749. These are physics witnesses, NOT recommended balance or proof
+that current upgrade prices are achievable in the desired playtime. C05 must
+model carried-over progression, costs, distances and health together.
+
+The longer reachability harness is paced to at most 1,000 frames/second with
+60 Hz simulated physics. An uncapped development run hit a Jolt job-queue warning;
+it was rejected by the diagnostics gate. The paced final run passed without that
+warning; the gate was not weakened.
+
+python tests/run_clean_checks.py --godot <Godot 4.6 executable>
+  PASS: empty-editor baseline plus first/repeat imports and 600-frame runtime
+  checks for both demo and full editions in isolated copies/profiles.
+  Logs: .test-output/clean-checks/20261023-141002-8fc569/
+
+Rendered review: OpenGL compatibility renderer, all three courses before and
+after destruction; inspected art placement, final labels and removal of ship,
+lighthouse and pyramid images. No shader/runtime diagnostics.
+  Images: .test-output/course-tests/20261023-140526-75f686/course*-targets.png
+  and course*-destroyed.png; visual-targets.log in the same directory.
+
+Remaining release work
+
+C05: affordable progression and the approximately 20-hour-per-course pacing.
+C06: saved course/game completion, finish feedback, retirement/reset rules.
+The stable IDs are ready for C06; destroying a target does not yet save a
+completed-course milestone. No new save format or completion UI was introduced.
+
+Source changes only in this task. Existing Windows executables predate this work.
+Run tools/export_windows.py for a gated demo/full rebuild before distribution.
+macOS/Linux packaging and target-machine QA remain separate release tasks.

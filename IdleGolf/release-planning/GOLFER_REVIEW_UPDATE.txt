@@ -1,0 +1,108 @@
+IDLE GOLF - C02 GOLFER ROSTER REVIEW
+October 23, 2026
+
+Implementation
+
+All eight retained golfers now have distinct five-pose swing sheets and actual
+golfer portraits. Standard Golfer, Shop Keep and Lion Trees keep their existing
+art. Dyson and Blue Collar no longer borrow the default golfer's sheet. Zoomer,
+Lamb and Money Daily now animate instead of releasing immediately from a still.
+All five former golf-ball portrait placeholders use matching character crops.
+
+One elapsed-time timeline controls the poses and ball release. Contact occurs
+at the fourth pose (60% of the swing), once per swing, including when a slow
+frame crosses the contact point. The final pose returns to the ready stance.
+Animation speed includes the golfer's rate passive and remains shorter than
+the automatic shot interval at high upgrade levels. Duplicate swing requests
+and closing the shop cannot restart a windup or create an extra shot.
+
+Equipping a different golfer or changing course cancels a pending windup. The
+next scheduled swing uses current equipment; already airborne balls retain
+their original launch stats. Disabling spawning also cancels pending contact.
+Removed stale scene signal connections and frame-change-based release logic.
+Registered atlas positions keep the new golfers' feet aligned across poses,
+and normalized world scale keeps their size consistent with the original art.
+
+Reviewed passives (multipliers, not promised distance percentages)
+
+Golfer            Speed   Shot rate   Money   Target respawn wait
+Standard Golfer   1.00    1.00        1.00    1.00
+Dyson             1.15    0.95        1.00    1.00
+Shop Keep         1.00    1.00        1.50    1.00
+Lion Trees        1.20    1.00        1.25    1.00
+Blue Collar       1.00    1.00        1.00    0.50
+Zoomer            1.10    1.00        1.00    1.00
+Lamb              1.00    1.15        1.00    1.00
+Money Daily       1.00    1.00        1.15    1.00
+
+Blue Collar changes the wait after a target's two-second collapse. The finishing
+shot's captured golfer determines this delay, even after equipment changes.
+Damage/reward contributions still keep each shot's own reward multipliers.
+Passive values are retained; Dyson/Lamb now also affect animation speed.
+
+Money Daily previously cost 35 medals at level 14, after Shop Keep's stronger
+money bonus at 20 medals/level 10. Money Daily is now an earlier money option:
+12 medals at level 6. Existing ownership/equipment IDs and saved progress remain
+valid. Other golfer prices, unlocks and demo restrictions are unchanged.
+Short descriptions replace inaccurate distance claims and unfinished wording.
+
+Testing
+
+366 new golfer checks cover all eight passives, atlas regions, distinct sheets,
+five poses, launch-stat snapshots, exact-once contact, dropped frames, duplicate
+requests, upgrades through level 3000, equipment/course/disable cancellation,
+real Timer cadence, Money Daily's earlier placement and actual Blue Collar
+respawn timing. The course suite/release gate now requires this test.
+The existing ball/golfer reward matrix and save/quit checks remain enforced.
+
+Rendered review: all eight golfers at ready/contact in the actual game, plus a
+40-pose/8-portrait gallery at GOLFER_ROSTER_PREVIEW.png. Corrected a vertical atlas
+offset after that review. This is a functional/art completion pass; C08/G04
+player pacing and broader platform QA remain open.
+
+Windows delivery
+
+For unrestricted full-game testing (all content, money, medals and free upgrade
+controls), use the repository's Test Full Game.cmd. See FULL_GAME_SANDBOX.txt.
+
+Build: idle-golf/builds/windows/20261023-155800-170399/
+Export validation: passed. Both editions passed clean imports, save/quit and
+exported runtime checks. Source checks: 4,265 gameplay (including 366 golfers),
+166 save, 91 audio PCM, 207 economy, 9 physics calibration and 10 diagnostic
+tests; all six economy scenarios completed. The reference campaign remains
+19.04 / 18.65 / 23.07 hours (60.76 total), still a model rather than player data.
+The exported golfer tester passed 10 checks across eight real swing contacts
+and an isolated save/reload. Completion and fresh balance launchers also passed.
+Build manifest.json records source/artifact hashes and validation logs.
+
+Use golfer-test/Test Golfers.cmd to review immediately. This launcher supplies
+level 30 and all eight owned golfers in a separate local profile. Choose a
+golfer and click Swing, enable automatic swings, or enable Fast swings. Open
+Shop > Golfers to see all portraits and descriptions. Normal saves, completion
+test saves and the fresh balance playtest are separate. Test controls live
+outside the shipping PCK and the full executable is the normal game binary.
+
+Use full/IdleGolf.exe for normal full-game play. The same build also supplies
+demo/IdleGolf_Demo.exe, completion-test/Test Completion.cmd and
+balance-playtest/Play Balance Test.cmd. The balance launcher starts fresh and
+does not unlock the golfers or grant test upgrades.
+
+Artwork provenance
+
+Built-in image_gen tool; five new transparent PNG swing sheets, using the
+existing swing/character art as visual references. The files are saved intact
+under idle-golf/art/golfers/:
+  DysonSwing.png
+  BlueCollarSwing.png
+  ZoomerSwing.png
+  LambSwing.png
+  MoneyDailySwing.png
+Prompt set and referenced inputs: GOLFER_ART_PROMPTS.json.
+Godot AtlasTexture regions provide frame/portrait crops without rewriting PNGs.
+The general source-asset rights/distribution audit remains E01.
+
+Next checklist work
+
+C04: finish the five remaining placeholder catalog entries: Market, Wrecking
+and Pin Ball icons; Course 2 and Course 3 names/icons. Unify overall branding.
+C07: golden-event review. D01: new-player guidance. C08/G04: actual player pacing.

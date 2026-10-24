@@ -26,6 +26,9 @@ var _initial_velocity_y := 0.0
 var _homing_time := 0.0
 var _launch_modifier := Vector2.ZERO  # x = curve, y = launch angle
 var _ball_id := ""
+var shot_context: Dictionary = {}
+var _cancelled := false
+var _landing_paid := false
 var _trail_timer := 0.0
 var _trail_phase := 0.0
 var _pinball_afterimage_index := 0
@@ -43,7 +46,28 @@ func launch(speed: float, angle_spread_deg: float, start_z: float) -> void:
 	_speed = speed
 	_spread = angle_spread_deg
 
+func is_shot_active() -> bool:
+	return not _cancelled and not is_queued_for_deletion() and shot_context.get("course_id", "") == GameState.equipped_course
+
+func can_damage_targets() -> bool:
+	return not _is_fake and is_shot_active()
+
+func cancel_shot() -> void:
+	_cancelled = true
+	_is_homing = false
+	_target_flag = null
+	freeze = true
+	collision_layer = 0
+	collision_mask = 0
+	set_physics_process(false)
+	remove_from_group("balls")
+	remove_from_group("shots")
+	queue_free()
+
 func _physics_process(delta: float) -> void:
+	if not is_shot_active():
+		cancel_shot()
+		return
 	var yards_from_tee: float = abs(global_position.z - _start_z) * 1.094
 	if yards_from_tee > PARTICLE_DESPAWN_YARDS:
 		_disable_distance_particles()
@@ -70,7 +94,7 @@ func _physics_process(delta: float) -> void:
 	elif not trail.emitting and dist_from_origin < 800.0 and not _particles_disabled_for_distance:
 		trail.emitting = true
 	
-	# firework explosion before apex — trigger when upward velocity drops below 40% of initial
+	# Fireworks burst near the apex at the threshold chosen for this shot.
 	if _is_firework and not _has_peaked and _initial_velocity_y > 0.0:
 		if linear_velocity.y <= _initial_velocity_y * _firework_explode_velocity_ratio:
 			_has_peaked = true
@@ -95,7 +119,11 @@ func _disable_distance_particles() -> void:
 		_firework_glow.visible = false
 		
 func _start_homing() -> void:
-	var flags = get_tree().get_nodes_in_group("flags")
+	_target_flag = null
+	_is_homing = false
+	if _is_fake or not is_shot_active():
+		return
+	var flags = get_tree().get_nodes_in_group("flags").filter(func(flag): return flag.can_process())
 	if flags.size() == 0:
 		return
 
@@ -138,6 +166,11 @@ func _start_homing() -> void:
 	_is_homing = true
 
 func _home_toward_flag(delta: float) -> void:
+	# A previously selected flag can become inactive while this ball is airborne.
+	if not is_instance_valid(_target_flag) or not _target_flag.can_process():
+		_target_flag = null
+		_is_homing = false
+		return
 	# give up after 5 seconds to prevent infinite orbiting
 	if _homing_time > 5.0:
 		_is_homing = false
@@ -163,6 +196,8 @@ func _home_toward_flag(delta: float) -> void:
 	apply_central_force(steer)
 	
 func _explode() -> void:
+	if _is_fake or not is_shot_active():
+		return
 	var BallScene = preload("res://scenes/Ball.tscn")
 	var fragments: Array = []
 	var base_real_count := 3
@@ -192,6 +227,7 @@ func _explode() -> void:
 			# real fragment — earns money on landing
 			var frag = BallScene.instantiate()
 			frag._is_fragment = true
+			frag.shot_context = shot_context
 			frag._speed = 0
 			frag._spread = 0
 			frag._start_z = _start_z
@@ -210,6 +246,7 @@ func _explode() -> void:
 			# fake particle — just visuals, no landing signal
 			var fake = BallScene.instantiate()
 			fake._is_fragment = true
+			fake.shot_context = shot_context
 			fake._is_fake = true
 			fake._speed = 0
 			fake._spread = 0
@@ -228,7 +265,17 @@ func _explode() -> void:
 	queue_free()
 
 func _ready() -> void:
-	add_to_group("balls")
+	if shot_context.is_empty():
+		shot_context = GameState.capture_shot_context()
+	# All shots share course cleanup, but only scoring balls participate in
+	# gameplay queries. Cosmetic fragments keep gravity-driven visual motion.
+	add_to_group("shots")
+	if _is_fake:
+		collision_layer = 0
+		collision_mask = 0
+		$CollisionShape3D.disabled = true
+	else:
+		add_to_group("balls")
 	if _is_fragment:
 		_start_z = _start_z  # already set by parent
 		trail.draw_pass_1 = trail.draw_pass_1.duplicate()
@@ -248,8 +295,8 @@ func _ready() -> void:
 
 	_start_z = global_position.z
 
-	_ball_id = GameState.equipped_ball
-	var ball_data = GameState.balls[GameState.equipped_ball]
+	_ball_id = shot_context.ball_id
+	var ball_data: Dictionary = shot_context.ball_data
 	trail.draw_pass_1 = trail.draw_pass_1.duplicate()
 	var mat = trail.draw_pass_1.material.duplicate()
 	mat.albedo_color = ball_data["trail_color"]
@@ -259,7 +306,7 @@ func _ready() -> void:
 	
 	var spread_rad = deg_to_rad(randf_range(-_spread, _spread))
 	var aim_angle = _aim * deg_to_rad(50.0) + spread_rad
-	var consistency = GameState.get_consistency()
+	var consistency: float = shot_context.consistency
 	var worst_possible = max(0.05, 1.0 - (1.0 / consistency))
 	var distance_mult = randf_range(worst_possible, 1.0)
 	var whiff_percent = clamp(WHIFF_CHANCE_SCALE / consistency, MIN_WHIFF_CHANCE, MAX_WHIFF_CHANCE)
@@ -273,7 +320,7 @@ func _ready() -> void:
 	launch_angle = clamp(launch_angle, 0.05, 0.6)
 	
 	# convert flat yards to extra speed
-	var flat_bonus = GameState.get_flat_distance()
+	var flat_bonus: float = shot_context.flat_distance
 	var curve = -_launch_modifier.x
 
 	var total_horizontal_speed = _speed * distance_mult * ball_speed_mult * distance_mult_from_curve + flat_bonus
@@ -307,11 +354,16 @@ var _curve := 0.0
 	# ... rest of your existing _process code
 	
 func _land() -> void:
-	if _has_landed:
+	if _has_landed or not is_shot_active():
 		return
 	_has_landed = true
 	if _is_fake:
-		# fake particle — just disappear after a moment
+		# No ground collider: stop at the visual landing threshold and let the
+		# existing trail fade without emitting a gameplay landing signal.
+		freeze = true
+		linear_velocity = Vector3.ZERO
+		trail.emitting = false
+		set_physics_process(false)
 		var tween = create_tween()
 		tween.tween_interval(0.5)
 		tween.tween_callback(queue_free)
@@ -415,7 +467,7 @@ func _emit_destructible_warning_ring() -> void:
 	if randi() % 4 != 0:
 		return
 	for obj in get_tree().get_nodes_in_group("destructibles"):
-		if is_instance_valid(obj) and global_position.distance_to(obj.global_position) < 3.5:
+		if is_instance_valid(obj) and obj.can_process() and global_position.distance_to(obj.global_position) < 3.5:
 			_spawn_shockwave(obj.global_position + Vector3.UP * 0.4, Color(0.9, 0.9, 0.9, 0.7), 0.45)
 			return
 

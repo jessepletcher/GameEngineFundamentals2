@@ -1,7 +1,14 @@
 extends Node3D
+const RewardRules = preload("res://RewardRules.gd")
 
-signal destroyed(reward: float)
+signal destroyed(reward: float, earned_xp: float)
 
+@export var target_id: String = ""
+@export var target_name: String = ""
+@export var is_final_target: bool = false
+## Optional artwork-top height for labels when the collider covers a lower part.
+@export var yardage_height: float = 0.0
+@export var yardage_offset: Vector3 = Vector3.ZERO
 @export var hits_required: int = 10
 @export var respawn_time: float = 15.0
 @export var shake_factor: float = 1.0
@@ -10,8 +17,12 @@ signal destroyed(reward: float)
 @onready var scaled_sprite: Node3D = $ScaledSprite
 @onready var static_body: StaticBody3D = $StaticBody3D
 @onready var collision_shape: CollisionShape3D = $StaticBody3D/CollisionShape3D
+@onready var hit_shapes: Array[Node] = static_body.get_children().filter(func(child): return child is CollisionShape3D)
 
 var _hits_taken := 0
+var _pending_reward := 0.0
+var _pending_xp := 0.0
+var _respawn_multiplier := 1.0
 var _is_alive := true
 var _hit_balls: Array = []  # track which balls already counted a hit
 var _yardage_label: Label3D
@@ -19,14 +30,17 @@ var _yardage_tween: Tween
 
 func _ready() -> void:
 	add_to_group("destructibles")
+	static_body.disable_mode = CollisionObject3D.DISABLE_MODE_REMOVE
 	_create_yardage_label()
-	static_body.mouse_entered.connect(func(): _yardage_label.visible = true)
+	static_body.mouse_entered.connect(func(): _yardage_label.visible = can_process() and _is_alive)
 	static_body.mouse_exited.connect(func(): _yardage_label.visible = false)
 
 func _create_yardage_label() -> void:
 	_yardage_label = Label3D.new()
 	var yards = global_position.length() * 1.094
 	_yardage_label.text = "%s yds" % GameState.format_number(yards)
+	if is_final_target:
+		_yardage_label.text = "%s\nFinal target\n%s" % [target_name, _yardage_label.text]
 	_yardage_label.font = load("res://balatro.otf")
 	_yardage_label.font_size = 40
 	_yardage_label.modulate = Color.WHITE
@@ -45,11 +59,13 @@ func _create_yardage_label() -> void:
 		shape_top_y += shape.size.y * 0.5
 	elif shape is SphereShape3D:
 		shape_top_y += shape.radius
+	if yardage_height > 0.0:
+		shape_top_y = global_position.y + yardage_height
 	add_child(_yardage_label)
-	_yardage_label.global_position = Vector3(collision_shape.global_position.x, shape_top_y + 0.5 * ds, collision_shape.global_position.z)
+	_yardage_label.global_position = Vector3(collision_shape.global_position.x, shape_top_y + 0.5 * ds, collision_shape.global_position.z) + yardage_offset
 
 func show_yardage() -> void:
-	if not _yardage_label or not is_instance_valid(_yardage_label):
+	if not can_process() or not _is_alive or not _yardage_label or not is_instance_valid(_yardage_label):
 		return
 	# kill previous blink if still running
 	if _yardage_tween and _yardage_tween.is_valid():
@@ -69,12 +85,16 @@ func show_yardage() -> void:
 		_yardage_tween.tween_interval(0.6)
 
 func _physics_process(_delta: float) -> void:
-	if not _is_alive:
+	if not can_process() or not _is_alive:
 		return
+	for hit_shape in hit_shapes:
+		if not hit_shape.disabled:
+			_check_hits(hit_shape)
 
+func _check_hits(hit_shape: CollisionShape3D) -> void:
 	# use the collision shape's AABB for hit detection
-	var shape = collision_shape.shape
-	var shape_origin = collision_shape.global_position
+	var shape = hit_shape.shape
+	var shape_origin = hit_shape.global_position
 	var half_extents: Vector3
 
 	# pad the detection area so balls that bounce off the surface still register
@@ -89,6 +109,8 @@ func _physics_process(_delta: float) -> void:
 	for ball in get_tree().get_nodes_in_group("balls"):
 		if not is_instance_valid(ball):
 			continue
+		if not ball.has_method("can_damage_targets") or not ball.can_damage_targets():
+			continue
 		if ball in _hit_balls:
 			continue
 
@@ -98,10 +120,23 @@ func _physics_process(_delta: float) -> void:
 
 		if dx < half_extents.x and dy < half_extents.y and dz < half_extents.z:
 			_hit_balls.append(ball)
-			_take_hit()
+			_take_hit(ball.shot_context)
 
-func _take_hit() -> void:
+func _take_hit(shot_context: Dictionary = {}) -> void:
+	if not can_process() or not _is_alive:
+		return
+	if shot_context.is_empty():
+		shot_context = GameState.capture_shot_context()
+	if shot_context.course_id != GameState.equipped_course:
+		return
 	_hits_taken += 1
+	# Each hit carries its own launch stats; the finishing hit cannot reprice
+	# earlier damage. The finishing golfer determines the next respawn delay.
+	var distance := global_position.length() * 1.094
+	var contribution := RewardRules.destructible_hit(shot_context, money_per_hit, distance)
+	_pending_reward += contribution.money
+	_pending_xp += contribution.xp
+	_respawn_multiplier = shot_context.respawn_mult
 	_shake()
 
 	if _hits_taken >= hits_required:
@@ -126,13 +161,14 @@ func _shake() -> void:
 	tween.tween_property(scaled_sprite, "position:x", base_x, 0.02)
 
 func _crumble() -> void:
+	if not can_process() or not _is_alive:
+		return
 	_is_alive = false
-	collision_shape.disabled = true
+	for hit_shape in hit_shapes:
+		hit_shape.disabled = true
 
-	var distance = global_position.distance_to(Vector3.ZERO) * 1.094  # convert to yards
-	var destruct_mult = GameState.balls[GameState.equipped_ball].get("destruct_mult", 1.0)
-	var reward = money_per_hit * _hits_taken * distance * GameState.get_money_mult() * destruct_mult
-	destroyed.emit(reward)
+	var reward := _pending_reward
+	destroyed.emit(reward, _pending_xp)
 	_spawn_reward_text(reward)
 
 	AudioManager.play_sfx("destroy")
@@ -158,8 +194,7 @@ func _crumble() -> void:
 		shake_tween.kill()
 		scaled_sprite.position.x = 0.0
 	)
-	var respawn_mult = GameState.get_golfer_data().get("respawn_mult", 1.0)
-	fall_tween.tween_interval(respawn_time * respawn_mult)
+	fall_tween.tween_interval(respawn_time * _respawn_multiplier)
 	fall_tween.tween_callback(_respawn)
 
 var _reward_label: Label3D
@@ -228,9 +263,12 @@ func _spawn_break_pieces() -> void:
 
 func _respawn() -> void:
 	_hits_taken = 0
+	_pending_reward = 0.0
+	_pending_xp = 0.0
 	_hit_balls.clear()
 	_is_alive = true
-	collision_shape.disabled = false
+	for hit_shape in hit_shapes:
+		hit_shape.disabled = false
 	scaled_sprite.scale = Vector3.ONE
 	scaled_sprite.position = Vector3.ZERO
 	var sprite_3d = scaled_sprite.get_node("Sprite3D")

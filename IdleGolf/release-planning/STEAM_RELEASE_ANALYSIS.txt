@@ -1,0 +1,552 @@
+IDLE GOLF STEAM RELEASE ANALYSIS
+Assessment date: October 22, 2026
+
+Implementation note: this file preserves the original audit. B01-B12 have since
+been implemented; see the current checklist and batch reports for changes and
+remaining release validation. CLEAN_IMPORT_UPDATE.txt records the enforced checks,
+latest Windows rebuild, and the bounded Godot editor diagnostic exception.
+
+1. RELEASE ASSESSMENT
+
+Idle Golf has a substantial playable foundation, but the inspected project is
+still a public-demo configuration rather than a release candidate for a paid 1.0.
+The core work now is to make the existing mechanics reliable, finish the promised
+content, establish satisfying progression, and prepare a repeatable Steam release.
+Simply turning off the demo flag would expose unfinished content and debug tools.
+
+The strongest foundations are automatic golf shots, aim/spin controls, cash
+upgrades, XP levels, retirement/medals, equipment purchases, destructible targets,
+golden flags, feedback effects, settings, and an in-game guide. These systems do
+not need to be reinvented. They need consistent rules, complete content and QA.
+
+The largest release risks are:
+- Progress loss and unreliable shutdown behavior.
+- Inactive-course and special-ball interactions that change earnings incorrectly.
+- Thin later courses, placeholder presentation, and an unproven endgame.
+- A steep late-game medal curve with no measured completion pacing.
+- Unresolved asset provenance and credits.
+- Demo-only packaging and no verified Steam distribution/release pipeline.
+
+Recommendation: define a deliberately bounded single-player 1.0, stabilize it,
+then finish and balance that scope. Start Steam account/store preparation in
+parallel once the product promise and asset rights are clear. Set the public
+release date after an external beta and a reproducible release candidate.
+
+This assessment is not a completion percentage or a calendar estimate. Staffing,
+available hours, target playtime, price, platform commitments, and the Steamworks
+account's actual status are not established. Those decisions materially affect
+the schedule.
+
+2. WHAT EXISTS TODAY
+
+Source references below are relative to the idle-golf project directory.
+Line numbers describe the source inspected on the assessment date.
+
+Area                 Present state
+Engine               Godot 4.6, Forward Plus; Windows renderer selects D3D12.
+Code                 17 GDScript files and 9 scenes; main.gd is 1,913 lines.
+Catalog              7 balls, 8 golfers, 3 courses, 9 upgrade tracks.
+Current demo access  3 balls, 3 golfers, 1 course, 7 visible upgrade tracks.
+Progression          Cash, XP, level bonuses, retirement, medals and equipment.
+Settings             Window mode, 3 resolutions, VSync, music/SFX mute, reset/exit.
+Help                 Four-page guide, confirmations, saved help-button hint.
+Persistence          ConfigFile save, 15-second autosave, partial sanitization.
+Builds               Windows and Linux x86_64 demo presets and existing packages.
+Assets               155 PNGs, 2 SVGs, 14 MP3s, 2 WAVs, 1 font in source inventory.
+Steam preparation    No integration/upload configuration found in this workspace.
+Automated QA         No maintained test suite, CI or release script found.
+
+Catalog evidence: GameState.gd:21,58-94. Engine: project.godot:13-38.
+Settings/help: main.gd:1144-1475. Save: GameState.gd:237-317.
+No missing literal res:// source paths were found in the resource-reference scan.
+That does not prove that imports, UID references or exported loading are correct.
+
+Course content is uneven:
+- Big Piney: three flags and five destructibles, with developed scenery.
+- Course 2: layered desert scenery, one flag, no authored destructibles.
+- Course 3: one background sprite and one flag, no authored destructibles.
+Evidence: scenes/main.tscn:1314-1575. Course 3's description calls it longer, but
+its authored flag is at z=40 versus Big Piney's flags at z=100/150/200. A different
+layout can be valid, but the current description and the content need alignment.
+
+3. VALIDATION PERFORMED AND ITS LIMITS
+
+The validation subdirectory preserves probe source, output and import/smoke logs,
+with reproduction instructions and an explanation of expected diagnostics.
+
+The audit combined source/configuration inspection, asset/package inspection,
+official Steam documentation, and isolated Godot checks. Game source and actual
+player saves were not changed. Checks used a copied project with only SAVE_PATH
+redirected to an audit file, plus a separate temporary probe script.
+
+Observed in the isolated runtime:
+- Catalog counts were 7 balls / 8 golfers / 3 courses / 9 upgrades.
+- Automatic quit acceptance was false. Propagating a window-close notification
+  left the process running until the probe explicitly quit.
+- After a deliberately malformed save failed to load, the next save replaced it.
+- Switching to Course 2 left five hidden destructibles processing with collisions.
+- Homing selected an invisible course flag when positioned near that flag.
+- A ball marked as a cosmetic fake fragment increased a destructible's hit count.
+
+A 120-frame headless startup after import exited without script/runtime errors.
+The initial import from a copy without .godot emitted an unrecognized autoload
+UID and a related main.gd type-inference error; those script errors disappeared
+on repeat import. The isolated editor also reported an inaccessible user://
+profiler directory. Treat these as build-environment/clean-import findings to
+resolve, not proof that ordinary gameplay always fails to compile. Exit code 0
+alone is insufficient for validating Godot imports; inspect diagnostics.
+
+Headless validation does not establish visual quality, audible behavior, GPU
+performance, Windows UI close behavior end to end, long-session stability,
+Linux/Proton compatibility, or the quality of a shipped Steam executable. The
+course probes directly selected a locked course in the copy to exercise existing
+full-game code; they were not a complete full-build playthrough.
+
+Git status could not be verified because Git could not access the parent
+repository path in this environment. Findings refer to the visible filesystem,
+not a confirmed clean commit. The Steamworks partner dashboard was not inspected;
+account, app, store, payment and review status remain to be checked by the owner.
+
+4. TECHNICAL RELEASE BLOCKERS
+
+Priorities used in the companion checklist:
+P0 = a release gate; do not publish with this unresolved.
+P1 = planned work before the recommended 1.0 launch.
+P2 = optional or subsequent work unless advertised/committed for launch.
+
+4.1 Protect saves and make failures recoverable [P0]
+
+GameState.gd:275 writes directly to the only save file and ignores the result.
+At :279-281, a load error returns without protecting the failed file; autosave
+can subsequently overwrite it with current/default state. This was reproduced.
+Sanitization at :407-447 helps with ordinary values and equipment IDs, but is not
+a substitute for typed validation, finite-number checks and migration rules.
+
+Implement a schema version, validated reads, an atomic replacement strategy,
+last-good backup, visible write-failure handling, and recovery for unreadable
+saves. Preserve the failed file for recovery. Test truncated files, malformed
+values, missing fields, previous schemas, read-only paths, interrupted writes,
+invalid equipment IDs and unreasonable progression values. Keep migration
+fixtures under version control. Do not change the save filename every patch.
+
+Done when: a corrupt or unwritable save cannot silently erase the only copy of
+progress; supported old saves migrate; a crash loses no more than the documented
+autosave window under ordinary conditions; failures are understandable to players.
+
+4.2 Fix shutdown and transition accounting [P0]
+
+GameState.gd:111 disables automatic quit. Its WM-close handler (:232-234) saves
+but never quits. Settings Exit does call quit (main.gd:1218-1220). Consolidate
+normal shutdown into a consistent save/accounting/exit path. A forced process
+termination cannot be assumed to run that handler, so autosave remains essential.
+
+Market Ball investments live only in main.gd:84,505-517 and are omitted from
+GameState.save. Quitting or retirement/reload can discard the pot. Decide whether
+to persist pots by stable course/flag ID or cash them out at defined transitions.
+Course-switch cashout (:157-163) also omits XP given by normal cashout (:520-525).
+
+Done when: window X, Alt+F4 and Settings Exit terminate normally; startup after
+abrupt termination recovers; exit/retirement/course changes do not unexpectedly
+lose banked earnings; equivalent cashouts award consistent cash, lifetime totals
+and XP. Retirement previews must include exactly the value used by retirement.
+
+4.3 Separate demo/full products from development tools [P0]
+
+IS_DEMO_BUILD is true (GameState.gd:21), the save is demo-specific (:42), and both
+exports use demo metadata. Demo sanitization clears locked ownership/upgrades
+(:423-440). DebugCamera.gd:11-18 enables F1 camera controls when the demo flag is
+false, so unlocking the full game also exposes a development feature.
+
+Create deliberate demo and full export configurations, each with tested product
+identity and save rules. Gate debug tools independently using development/export
+features. Decide whether the paid game imports demo progress and how an import is
+made once without damaging either save. Preserve separate backups.
+
+Done when: a clean command/build procedure produces the correct SKU; full content
+is available only where intended; no release exposes debug controls; installing
+and running demo/full in either order cannot downgrade full-game progress.
+
+4.4 Isolate active-course gameplay [P0 for multiple-course release]
+
+main.gd:170-173 switches visibility only. Hidden destructibles still scan balls
+(Destructible.gd:71-101), and homing searches all flags (Ball.gd:97-138). Both
+effects were reproduced. This can create invisible targets, rewards or attraction.
+
+Scope targeting, collisions, processing, reward signals and yardage displays to
+the active course. Define what happens to in-flight balls during a course switch.
+Prefer explicit active-course ownership over repeated global-group assumptions.
+
+Done when: inactive courses cannot influence a shot or reward; changing courses
+during multiball, homing, golden flags or market investment follows consistent rules.
+
+4.5 Make shot and payout rules consistent [P0]
+
+- Ball money multipliers are defined but omitted by the reward path. Homing 1.5x,
+  Firework 0.5x and Pinball 0.7x are not included by get_money_mult. See
+  GameState.gd:72,74,77,397-398 and main.gd:497,590.
+- Ball.gd:251 records launch identity, but landing and chain rewards read the
+  currently equipped ball (main.gd:487,498,539,589). Shopping while shots fly can
+  change their reward/special rules after launch.
+- Fake firework fragments are full Ball objects in the balls group and can damage
+  destructibles (Ball.gd:209-231; Destructible.gd:89-101). Reproduced in a probe.
+
+Define which bonuses apply at launch versus impact, carry that context through
+fragments/chains, and use one payout calculation with meaningful deterministic
+tests. Ensure decorative particles do not participate in gameplay damage.
+
+Done when: every ball's direct hit, miss, chain, fragment and destruction reward
+matches its documented rule; switching equipment cannot retroactively convert a
+shot; effect-only objects cannot earn money or damage targets.
+
+4.6 Repair descriptions and audio behavior [P1]
+
+Mechanics mismatches to resolve before balancing:
+- Market description says 10%/second; growth constant is 0.20 (main.gd:93,115).
+- Pin Ball says 1.5x consistency; data is 10.5 (GameState.gd:77).
+- Wrecking promises 1.5x distance, but has speed_mult 1.0 and no corresponding
+  distance bonus in Ball.gd:258-285 (GameState.gd:76).
+- Firework says six balls; code normally creates three scoring/two cosmetic
+  fragments, reducing scoring fragments with distance (Ball.gd:168-175).
+
+Decide intended mechanics, fix either code or copy, and derive displayed stats
+from shared data wherever practical. Avoid balancing around unintended behavior.
+
+AudioManager.gd:98-112 does not start music/ambience when startup is muted;
+unmute (:142-147) only changes stream_paused. Verify/fix startup-muted then unmute,
+scene reload, shop transitions, and the direct ambience restart callback in
+main.gd:231. This audio finding is code-based, not audibly reproduced.
+
+5. CONTENT AND ECONOMY NEEDED FOR A COMPLETE GAME
+
+5.1 Freeze an explicit 1.0 promise
+
+Suggested working scope, subject to the owner's decisions: a complete
+single-player incremental golf game, with the existing roster as the maximum
+starting scope, three meaningfully different courses if all can be finished,
+clear retirement progression, and a defined mastery/endgame goal. Scope can be
+reduced before marketing commitments; more roster entries are not automatically
+more value. Do not add systems simply because another idle game has them.
+
+Decide before implementation planning:
+- Intended time to first retirement and to the main completion/mastery milestone.
+- Whether the game earns progress while closed, and the offline cap/rules if so.
+- Final course/ball/golfer list and the distinction between demo and paid content.
+- Windows-only launch versus a supported native Linux release as well.
+- Mouse/keyboard launch versus full controller/Deck work.
+- Price positioning, launch languages, and the first post-launch commitment.
+
+An endless game need not have a traditional ending. It should still answer what
+players work toward after the last unlock: course mastery, a final challenge,
+collection completion, escalating goals or another intentional objective.
+
+5.2 Finish each promised course and item
+
+Ten catalog entries use BallIcon.png as placeholder art: three balls, five
+golfers and two courses (GameState.gd:75-94). Two locked golfers reuse the normal
+swing and three use single-frame sheets. Replace placeholder shop art, finalize
+names/passives, and decide the animation standard for the full roster.
+
+For each course, author a distinct layout and reason to play it: target placement,
+obstacles/destructibles where appropriate, readable yardage, different useful
+loadouts, reward balance, finished art/audio and a clear unlock purpose. A course
+does not require the same target count as Big Piney, but its gameplay must justify
+its place in the paid game. Test each special ball on every course.
+
+RelicShop.gd references nonexistent GameState relic/unbox members and is not
+attached to an active scene. Treat it as dormant unfinished code, not a shipped
+feature. Remove from release scope or explicitly plan it; do not count it toward
+1.0 content depth.
+
+5.3 Build a progression model, then validate it with people
+
+The current rules have material pacing risks:
+- Later retirement pays zero medals unless the run exceeds the best money run.
+  A 10% improvement awards 19 medals; doubling the record awards 112.
+- The ten Consistency Mult levels cost 102,300 medals in total. At a theoretical
+  ceiling around 250 per retirement, this alone takes over 400 retirements.
+- Three Multi Ball levels total 1,950 medals; six Spread levels total 3,835.
+- Reaching level 30 requires 4,321,420 cumulative awarded XP; XP multipliers
+  reduce the underlying earnings/time needed. This is the Firework unlock level,
+  not a measured time estimate.
+Evidence: GameState.gd:160-174,334-336,362-370 and upgrade definitions :58-67.
+
+Track fresh-save time to first purchase, first target, first retirement, each
+course/ball unlock, main milestone and late-game completion. Compare relaxed,
+active/optimized and offline-returning players if offline progress is added.
+Measure meaningful choices and dead time, not just total hours. Revisit record-
+based prestige if one strong run can make subsequent runs feel unrewarding.
+
+Golden flags currently wait for a hit before another timer begins and may select
+an unreachable target (main.gd:734-761). Decide whether they are persistent goals
+or temporary opportunities; add expiry/reachability rules if the latter.
+
+Done when: the advertised progression can be completed without debug currency;
+upgrades remain useful; no mandatory grind wall contradicts the target playtime;
+multiple unfamiliar players understand retirement and can describe why they
+choose particular equipment/courses.
+
+6. PLAYER EXPERIENCE AND ACCESSIBILITY
+
+The existing guide is useful, but add brief first-session coaching for adjusting
+a shot, buying an upgrade and understanding the first retirement. Surface Ctrl-
+click bulk buying and Shift-click refunds; these are currently easy to miss.
+
+Recommended before 1.0:
+- Explain current income, the next reachable goal, and what retirement keeps.
+- Keep shop descriptions, locked-state explanations and stat previews consistent.
+- Add persistent music/SFX/master volume controls; consider ambience separately.
+- Add reduced motion/screen shake and a readable text/UI scaling option.
+- Test text and important cues without relying on color alone.
+- Add consistent Escape/back behavior and deliberate UI focus handling.
+- Decide whether aim/spin settings should survive restart and retirement.
+- Make pause, minimized/background simulation, audio and FPS policies explicit.
+- Default to an appropriate frame limit/VSync policy and offer lower background
+  rendering cost; idle games should not needlessly consume a GPU while minimized.
+
+The interface is designed around a 1920x1080 canvas. The guide uses 16px body
+text, which scales to roughly 10.7 pixels at 720p. Test 720p, 1080p, high-DPI,
+16:10, ultrawide, monitor changes and Alt+Tab. An unsuitable display choice should
+be recoverable. See project.godot:25-30 and main.gd:1431.
+
+Current input is mouse-centric. scenes/ShotControl.gd:11-28 handles mouse events and
+scenes/UpgradeShop.gd:148-160 requires left mouse input. No complete controller actions,
+keyboard-only path or focus flow was found. Full controller support requires
+gamepad aim/spin, focus navigation, buy/refund/bulk actions, prompts, hotplug and
+a complete no-mouse playthrough. A Linux export does not establish Deck quality.
+Valve assesses compatibility separately: [Steam hardware compatibility]
+(https://partner.steamgames.com/doc/steamhardware/compat).
+
+No closed-game earnings or localization resources were found. These are scope
+decisions, not Steam release requirements. If English-only and no offline
+earnings are chosen, store copy and the guide must accurately describe that.
+
+7. BUILD ENGINEERING AND QUALITY ASSURANCE
+
+7.1 Make one authoritative release artifact
+
+Current Windows top-level and staged executables with the same version name have
+different hashes/sizes. The staged, source and ZIP changelogs also differ. An old
+staging folder could therefore be mistaken for the latest release.
+
+Create a repeatable export/package process that records source revision, Godot
+version, product configuration, version, build time and artifact hashes. Use
+clean staging and immutable versioned outputs. Test the exact package/depot that
+will ship. Keep credentials outside source and output packages. Add a release
+manifest and verify included README/credits/version metadata agree.
+
+Presets export all resources with no exclusions. Audit unused audio/art and dormant
+content, then exclude unnecessary material intentionally. Check consistent icon
+branding: Windows export currently references RedFlag.png, while the project uses
+icon.svg. Windows signing is a distribution choice, not a blanket Steam mandate.
+
+7.2 Establish supported hardware through testing
+
+Forward Plus/D3D12, 3D physics and many animated effects need profiling on integrated
+and lower-end graphics, not just the development machine. Test the chosen renderer
+and any fallback before committing minimum specs. Native Linux, Windows through
+Proton and Steam Deck are separate validation targets if promised.
+
+Measure FPS/frame time, CPU/GPU load, memory and active ball/effect counts during
+late-game multiball/fireworks, shop transitions and multi-hour idle sessions. Check
+for unbounded growth and excessively long floating-text queues. Begin with an
+8-hour soak target and extend if anomalies appear; that is a proposed QA gate,
+not a result already achieved.
+
+7.3 Add focused regression coverage
+
+Highest-value automation: save migrations/recovery; payout formulas; purchases,
+refunds and caps; retirement retention/rewards; shot context; inactive-course
+isolation; demo/full content boundaries; and smoke startup from clean exports.
+Assertions should protect player-visible behavior, rather than mirror code.
+
+main.gd mixes gameplay, course state, effects, settings and help UI. Extract a
+payout component, save component and course manager as needed for these fixes.
+A wholesale architecture rewrite is not a prerequisite for shipping.
+
+Recommended QA evidence matrix:
+Test area             Required evidence before the corresponding claim ships
+Clean install         Steam install/launch without Godot/editor/dev folders.
+Save reliability      Fresh, old, corrupted, unwritable and interrupted saves.
+Progression           Fresh game through multiple retirements and final goal.
+Content combinations  Every ball/golfer/course; switch equipment while airborne.
+Transitions           Shop, course, retire, reset, close, restart, suspend/resume.
+Economy               Deterministic rewards, refunds, caps, no nonfinite values.
+Settings/audio        All controls persist; mute-on-start and unmute work audibly.
+Display/input         Promised resolutions, DPI, aspect ratios and input methods.
+Performance           Low-end target plus worst-case effects and long idle soak.
+Steam                 Launch options, install/update, offline mode, overlay, logs.
+Cloud if enabled      Two devices, account switch, conflicts, offline play, reset.
+Patch/rollback        Old save loads after update; rollback procedure rehearsed.
+
+8. STEAM PUBLISHING WORK
+
+8.1 Account, store, reviews and timing
+
+Confirm the actual partner-account state first. The repository cannot establish
+whether onboarding, tax/bank verification, the app fee or a store page already
+exist. Complete agreements, identity/payment details and the Content Survey.
+Current official onboarding documentation lists a 21-day fee-to-release waiting
+period for the first few titles and at least two weeks of public Coming Soon
+visibility. Use the account's actual eligibility date when scheduling; the periods
+can overlap. [Steam onboarding]
+(https://partner.steamgames.com/doc/gettingstarted/onboarding)
+
+The Steam Direct fee is US$100 or local equivalent, with applicable taxes. It is
+not refundable and is recoupable after at least US$1,000 adjusted gross revenue.
+[Steam Direct fee](https://partner.steamgames.com/doc/gettingstarted/appfee)
+
+Finish both store and build checklists; submit the store before the build. Valve's
+review guidance says typically 3-5 business days and recommends at least 7 business
+days for each review submission. Submit a near-final build and allow rework buffer.
+Listed platforms/features must work; screenshots must show gameplay. Reviews are
+not substitutes for the project's own QA. [Review process]
+(https://partner.steamgames.com/doc/store/review_process)
+
+Approval does not automatically release the game. An authorized owner must perform
+the release/publish action at launch. [Release process]
+(https://partner.steamgames.com/doc/store/releasing)
+
+8.2 Store presentation and commercial decisions
+
+Prepare final name/developer branding, short and long descriptions, tags, accurate
+features/languages/specifications, support contact, price/regional pricing and a
+launch-discount decision. Research comparable games after the content/playtime
+promise is settled; this audit does not invent a selling price or revenue forecast.
+
+Create gameplay captures from the full release candidate, showing its readable
+core loop, upgrades and distinctive special balls/courses. Prepare a gameplay-led
+trailer, a press kit and a planned announcement cadence. Track playtest feedback,
+wishlists and store engagement to improve messaging, without treating any numeric
+wishlist target as a guarantee of success. The existing itch assets/copy are demo
+scaffolding and are not a complete Steam asset set.
+
+Required store art currently includes:
+- Header capsule: 920 x 430.
+- Small capsule: 462 x 174.
+- Main capsule: 1232 x 706.
+- Vertical capsule: 748 x 896.
+- At least five actual gameplay screenshots.
+Use official templates and readable game branding; avoid unrelated promotional
+text. [Store graphical assets]
+(https://partner.steamgames.com/doc/store/assets/standard)
+
+Library assets currently include a 600 x 900 capsule, 920 x 430 header, 3840 x 1240
+hero, and transparent logo at 1280px wide and/or 720px tall. Check safe areas and
+previews; sizes can change, so recheck at production time. [Library assets]
+(https://partner.steamgames.com/doc/store/assets/libraryassets)
+
+Complete the general/mature-content sections and applicable AI-content disclosure.
+Current guidance focuses the AI section on generated content shipped to and
+consumed by players, such as artwork/audio/localization. Using an assistant for
+this audit alone does not establish that the game contains such content. Complete
+regional ratings requirements shown for the app and intended markets.
+[Content Survey](https://partner.steamgames.com/doc/gettingstarted/contentsurvey)
+
+8.3 Distribution and optional Steam features
+
+Configure app/depot/package IDs, executable launch options, supported OSes and a
+private beta branch. Upload through SteamPipe; test install/update on a machine
+without the project. Retain the preceding known-good build and rehearse rollback.
+[SteamPipe uploading](https://partner.steamgames.com/doc/sdk/uploading)
+
+Integrating Steam's runtime API is optional for shipping. Achievements, leaderboards,
+controller support and trading cards are not universal release prerequisites.
+Anything advertised must be implemented. [Steamworks API overview]
+(https://partner.steamgames.com/doc/sdk/api)
+
+Steam Cloud is recommended for this progression-heavy game after local saving is
+reliable. Auto-Cloud is one option without adding API calls just for file syncing.
+Separate machine-specific display settings from progression, plan per-user save
+identity, and test cross-device/account behavior and conflicts. The current single
+file combines display settings and progress, so simply syncing it is insufficient
+as a carefully designed experience. [Steam Cloud]
+(https://partner.steamgames.com/doc/features/cloud)
+
+Achievements are a useful optional extension of mastery/progression goals. If
+chosen, design meaningful milestones, support offline unlock reconciliation and
+avoid trivial grind-only completion. Add a Godot-compatible Steam integration only
+after selecting its required features and validating release-export support.
+
+9. RIGHTS, CREDITS AND SUPPORT
+
+CREDITS.txt:10 explicitly says balatro.otf needs source/attribution confirmation;
+:32 asks for third-party source/license confirmation. Audio credits list filenames
+without provenance, and Casino.mp3 plus kinda zelda sounding.wav are present in
+the source tree but absent from that list. These are unresolved documentation
+issues, not proof of infringement.
+
+Make an asset register with source URL, creator, license/permission, commercial-use
+terms, required attribution, modification terms and retained proof for every
+third-party font, sound, music and art asset. Confirm original ownership where
+applicable. Resolve or replace anything without usable rights before public
+distribution. Review final names/branding and character references as part of that
+pass. Include required Godot and applicable third-party notices; a bare engine
+credit is not the same as the license notice. [Godot license guidance]
+(https://docs.godotengine.org/en/stable/about/complying_with_licenses.html)
+
+Before launch, prepare a support address/page, bug-report template including build
+version and logs, save backup/recovery instructions, known-issues page, and patch
+notes. Define who watches launch reports and how a severe save/crash problem
+triggers rollback or a hotfix. If telemetry is later added, define its purpose and
+data handling before shipping it; telemetry is not required to finish this game.
+
+10. EXECUTION ORDER AND EXIT GATES
+
+Milestone A: Agree the release scope.
+Owner: game/design owner, with engineering input.
+Deliverables: roster/course list, main milestone and target pacing, offline rules,
+platforms/input/languages, demo migration policy and commercial positioning.
+Exit: every store promise maps to a scoped and testable feature.
+
+Milestone B: Stabilize the foundation.
+Owner: engineering; art-rights inventory proceeds in parallel.
+Deliverables: save recovery, shutdown, market accounting, demo/full/debug separation,
+course isolation, consistent payouts and fragment behavior, regression fixtures.
+Exit: the reproduced defects are fixed and protected by meaningful checks.
+
+Milestone C: Complete and balance the game.
+Owner: design/engineering/art/audio.
+Deliverables: finished courses/roster, truthful descriptions, measured economy,
+defined mastery/endgame, onboarding/settings/readability improvements.
+Exit: the full promised loop is playable from a fresh save without shortcuts.
+
+Milestone D: Run an external beta.
+Owner: QA/coordinator and unfamiliar players.
+Deliverables: recorded progression sessions, exported hardware matrix, save stress,
+long-session profiling and selected Steam feature tests.
+Exit: no unresolved data-loss, crash, progression-blocking or major economy defects;
+content/pacing goals are met by real players, and remaining issues are acceptable.
+
+Milestone E: Build the release candidate and finish Steam review.
+Owner: release owner plus Steamworks account owner.
+Deliverables: clean reproducible package/depot, manifest, store assets/copy, finalized
+credits, accurate specs, approvals and eligibility dates.
+Exit: exact approved candidate passes install/update/launch and launch checklist.
+
+Milestone F: Launch and support.
+Owner: release/support owner.
+Deliverables: manual release, announcement, monitored reports, rollback-ready build,
+triaged hotfix queue and a sustainable patch plan.
+Exit: buyers receive the intended version and critical launch issues are addressed.
+
+Steam onboarding, rights clearance and store asset planning can progress alongside
+engineering. Final trailer/screenshots should follow stable visual content. Cloud
+depends on save design; achievements depend on milestone design; balance depends
+on corrected reward mechanics. These dependencies matter more than an invented
+date. Estimate remaining work after A/B with named owners and actual capacity.
+
+11. RECOMMENDED FIRST IMPLEMENTATION BATCH
+
+1. Lock the 1.0 scope and target progression milestones.
+2. Protect saves with recovery/migration, then repair close/exit behavior.
+3. Split demo/full configuration from debug controls and settle migration.
+4. Isolate inactive courses and define in-flight transition behavior.
+5. Correct payout context, ball bonuses and cosmetic fragment damage.
+6. Preserve Market earnings and unify cashout accounting.
+7. Resolve item-description mismatches, then model progression costs/rewards.
+8. Finish Courses 2/3 and roster presentation to the agreed scope.
+9. Resolve font/audio/art rights while preparing the Steam Coming Soon package.
+10. Establish one reproducible build and recruit unfamiliar beta players.
+
+Use STEAM_RELEASE_CHECKLIST.txt as the operational backlog. Leave future features
+out of the launch critical path unless they are part of the agreed product promise.

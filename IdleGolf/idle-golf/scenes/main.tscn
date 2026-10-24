@@ -98,6 +98,22 @@
 [ext_resource type="Script" uid="uid://dvcvompk6cw5p" path="res://DebugCamera.gd" id="debug_cam"]
 [ext_resource type="Script" uid="uid://4viempthtba8" path="res://ShopSignAnimation.gd" id="shopsign_script"]
 
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Sky.png" id="beach_Sky"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Clouds.png" id="beach_Clouds"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Water1.png" id="beach_Water1"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Water2.png" id="beach_Water2"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Water3.png" id="beach_Water3"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Water4.png" id="beach_Water4"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Water5.png" id="beach_Water5"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/LeftIsland.png" id="beach_LeftIsland"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/RightIsland.png" id="beach_RightIsland"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Rocks.png" id="beach_Rocks"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Fairway.png" id="beach_Fairway"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Fairway2.png" id="beach_Fairway2"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/Fairway3.png" id="beach_Fairway3"]
+[ext_resource type="Texture2D" path="res://BackgroundSprites/2/FairWay4.png" id="beach_FairWay4"]
+[ext_resource type="Shader" path="res://BeachTarget.gdshader" id="beach_mask"]
+
 [sub_resource type="GDScript" id="GDScript_jyhfs"]
 script/source = "extends Camera3D
 
@@ -349,6 +365,43 @@ size = Vector3(1200, 500, 100)
 size = Vector3(41.695, 71.045, 12.43)
 
 [sub_resource type="BoxMesh" id="BoxMesh_xaipn"]
+
+[sub_resource type="BoxShape3D" id="TargetShape_Cactus"]
+size = Vector3(1.86468, 13.31917, 4.00000)
+
+[sub_resource type="BoxShape3D" id="TargetShape_OilPump"]
+size = Vector3(5.604044, 17.372538, 2)
+
+[sub_resource type="BoxShape3D" id="TargetShape_TallCactus"]
+size = Vector3(1.598301, 12.253640, 2)
+
+[sub_resource type="BoxShape3D" id="TargetShape_Blimp"]
+size = Vector3(266.75435, 77.44481, 16.00000)
+
+[sub_resource type="BoxShape3D" id="TargetShape_Pyramids"]
+size = Vector3(160.76239, 160.76239, 40.00000)
+
+[sub_resource type="ShaderMaterial" id="LighthouseArt"]
+shader = ExtResource("beach_mask")
+shader_parameter/illustration = ExtResource("97_673bd")
+shader_parameter/lighthouse = true
+
+[sub_resource type="ShaderMaterial" id="CargoShipArt"]
+shader = ExtResource("beach_mask")
+shader_parameter/illustration = ExtResource("97_673bd")
+shader_parameter/lighthouse = false
+
+[sub_resource type="BoxShape3D" id="TargetShape_CargoShip"]
+size = Vector3(218.729801, 45.568703, 34.021907)
+
+[sub_resource type="BoxShape3D" id="TargetShape_Lighthouse"]
+size = Vector3(9.125029, 20.784789, 2.000000)
+
+[sub_resource type="BoxShape3D" id="TargetShape_MiddlePyramid"]
+size = Vector3(107.17493, 117.89242, 40)
+
+[sub_resource type="BoxShape3D" id="TargetShape_RightPyramid"]
+size = Vector3(150.04490, 171.47988, 40)
 
 [node name="Main" type="Node3D" unique_id=1063394605]
 script = ExtResource("1_0wfyh")
@@ -1312,6 +1365,8 @@ h_frames = 9
 fps = 2.0
 
 [node name="Destructible" parent="Level1" unique_id=1756764275 instance=ExtResource("72_j4bwh")]
+target_id = "level1_destructible"
+target_name = "Firewatch Tower"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 700)
 hits_required = 100
 shake_factor = 0.1
@@ -1333,6 +1388,8 @@ visible = false
 mesh = SubResource("BoxMesh_11yus")
 
 [node name="Destructible2" parent="Level1" unique_id=1152535827 instance=ExtResource("72_j4bwh")]
+target_id = "level1_destructible2"
+target_name = "Water Tower"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 459.67224)
 hits_required = 50
 shake_factor = 0.1
@@ -1354,6 +1411,9 @@ visible = false
 mesh = SubResource("BoxMesh_ih3m7")
 
 [node name="Destructible3" parent="Level1" unique_id=1099243967 instance=ExtResource("72_j4bwh")]
+target_id = "level1_destructible3"
+target_name = "Mountain"
+is_final_target = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1500)
 hits_required = 500
 shake_factor = 0.1
@@ -1374,6 +1434,8 @@ visible = false
 mesh = SubResource("BoxMesh_b6ruc")
 
 [node name="Destructible4" parent="Level1" unique_id=1109325919 instance=ExtResource("72_j4bwh")]
+target_id = "level1_destructible4"
+target_name = "Practice Target"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 25)
 hits_required = 5
 shake_factor = 0.1
@@ -1395,6 +1457,8 @@ visible = false
 mesh = SubResource("BoxMesh_ndrjj")
 
 [node name="Destructible5" parent="Level1" unique_id=1155254419 instance=ExtResource("72_j4bwh")]
+target_id = "level1_destructible5"
+target_name = "Hot Air Balloon"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 300)
 hits_required = 25
 shake_factor = 0.1
@@ -1445,7 +1509,7 @@ flag_texture = ExtResource("6_o6xl0")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.741, 0)
 
 [node name="ScaledSprite7" parent="Level2" unique_id=2063711652 instance=ExtResource("51_bu4jf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 899)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4500)
 texture = ExtResource("83_b6ruc")
 flip_h = true
 pixel_offset = Vector2(0, 0)
@@ -1465,19 +1529,43 @@ flip_h = true
 pixel_offset = Vector2(0, 0)
 sprite_scale = 0.2
 
-[node name="ScaledSprite10" parent="Level2" unique_id=281727016 instance=ExtResource("51_bu4jf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 45)
+[node name="Cactus" parent="Level2" instance=ExtResource("72_j4bwh")]
+position = Vector3(0, 0, 45)
+target_id = "level2_cactus"
+target_name = "Cactus"
+is_final_target = false
+hits_required = 5
+shake_factor = 0.1
+money_per_hit = 2.0
+
+[node name="ScaledSprite" parent="Level2/Cactus" index="0"]
 texture = ExtResource("86_v0wtd")
 flip_h = true
 pixel_offset = Vector2(0, 0)
 sprite_scale = 0.2
 
-[node name="ScaledSprite11" parent="Level2" unique_id=348819401 instance=ExtResource("51_bu4jf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 45)
+[node name="CollisionShape3D" parent="Level2/Cactus/StaticBody3D" index="0"]
+position = Vector3(34.496658, 0.799150, 0.000000)
+shape = SubResource("TargetShape_Cactus")
+
+[node name="TallCactus" parent="Level2" instance=ExtResource("72_j4bwh")]
+position = Vector3(0, 0, 45)
+target_id = "level2_tallcactus"
+target_name = "Tall Cactus"
+is_final_target = false
+hits_required = 50
+shake_factor = 0.1
+money_per_hit = 4.0
+
+[node name="ScaledSprite" parent="Level2/TallCactus" index="0"]
 texture = ExtResource("87_sgvw8")
 flip_h = true
 pixel_offset = Vector2(0, 0)
 sprite_scale = 0.2
+
+[node name="CollisionShape3D" parent="Level2/TallCactus/StaticBody3D" index="0"]
+position = Vector3(-43.154122, 0.000000, 0)
+shape = SubResource("TargetShape_TallCactus")
 
 [node name="ScaledSprite12" parent="Level2" unique_id=1393090707 instance=ExtResource("51_bu4jf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 55)
@@ -1486,12 +1574,24 @@ flip_h = true
 pixel_offset = Vector2(0, 0)
 sprite_scale = 0.2
 
-[node name="ScaledSprite13" parent="Level2" unique_id=1113275809 instance=ExtResource("51_bu4jf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 100)
+[node name="OilPump" parent="Level2" instance=ExtResource("72_j4bwh")]
+position = Vector3(0, 0, 100)
+target_id = "level2_oilpump"
+target_name = "Oil Pump"
+is_final_target = false
+hits_required = 25
+shake_factor = 0.1
+money_per_hit = 3.0
+
+[node name="ScaledSprite" parent="Level2/OilPump" index="0"]
 texture = ExtResource("89_4ue30")
 flip_h = true
 pixel_offset = Vector2(0, 0)
 sprite_scale = 0.2
+
+[node name="CollisionShape3D" parent="Level2/OilPump/StaticBody3D" index="0"]
+position = Vector3(-82.379452, 4.483236, 0)
+shape = SubResource("TargetShape_OilPump")
 
 [node name="ScaledSprite14" parent="Level2" unique_id=1838361981 instance=ExtResource("51_bu4jf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 200)
@@ -1521,12 +1621,34 @@ flip_h = true
 pixel_offset = Vector2(0, 0)
 sprite_scale = 0.2
 
-[node name="ScaledSprite18" parent="Level2" unique_id=573801585 instance=ExtResource("51_bu4jf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2000)
+[node name="Pyramids" parent="Level2" instance=ExtResource("72_j4bwh")]
+position = Vector3(0, 0, 2000)
+target_id = "level2_pyramids"
+yardage_offset = Vector3(-476.9284165850092, 0, 0)
+target_name = "Pyramids"
+is_final_target = true
+yardage_height = 503.72215
+hits_required = 500
+shake_factor = 0.1
+money_per_hit = 15.0
+
+[node name="ScaledSprite" parent="Level2/Pyramids" index="0"]
 texture = ExtResource("94_gr8w0")
 flip_h = true
 pixel_offset = Vector2(0, 0)
 sprite_scale = 0.2
+
+[node name="CollisionShape3D" parent="Level2/Pyramids/StaticBody3D" index="0"]
+position = Vector3(476.92842, 294.73104, 0)
+shape = SubResource("TargetShape_Pyramids")
+
+[node name="MiddlePyramid" type="CollisionShape3D" parent="Level2/Pyramids/StaticBody3D"]
+position = Vector3(-32.15248, 251.86107, 0)
+shape = SubResource("TargetShape_MiddlePyramid")
+
+[node name="RightPyramid" type="CollisionShape3D" parent="Level2/Pyramids/StaticBody3D"]
+position = Vector3(-396.54722, 289.37230, 0)
+shape = SubResource("TargetShape_RightPyramid")
 
 [node name="ScaledSprite19" parent="Level2" unique_id=52438207 instance=ExtResource("51_bu4jf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4000)
@@ -1537,14 +1659,24 @@ sprite_scale = 0.2
 bob_enabled = true
 bob_height = 8.0
 
-[node name="ScaledSprite20" parent="Level2" unique_id=604309853 instance=ExtResource("51_bu4jf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 800)
+[node name="Blimp" parent="Level2" instance=ExtResource("72_j4bwh")]
+position = Vector3(0, 0, 800)
+target_id = "level2_blimp"
+target_name = "Blimp"
+is_final_target = false
+hits_required = 100
+shake_factor = 0.1
+money_per_hit = 7.0
+
+[node name="ScaledSprite" parent="Level2/Blimp" index="0"]
 texture = ExtResource("96_gr8w0")
 flip_h = true
 pixel_offset = Vector2(0, 0)
 sprite_scale = 0.2
-bob_enabled = true
-bob_height = 6.0
+
+[node name="CollisionShape3D" parent="Level2/Blimp/StaticBody3D" index="0"]
+position = Vector3(283.96431, 305.47676, 0)
+shape = SubResource("TargetShape_Blimp")
 
 [node name="Level2Flags" type="Node3D" parent="." unique_id=1087643447]
 
@@ -1558,12 +1690,148 @@ flag_texture = ExtResource("6_o6xl0")
 [node name="Level3" type="Node3D" parent="." unique_id=1352324396]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.741, 0)
 
-[node name="ScaledSprite7" parent="Level3" unique_id=2134454637 instance=ExtResource("51_bu4jf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2351.6184)
+[node name="Sky" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 5000)
+texture = ExtResource("beach_Sky")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Clouds" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4950)
+texture = ExtResource("beach_Clouds")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Water1" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4900)
+texture = ExtResource("beach_Water1")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Water2" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4850)
+texture = ExtResource("beach_Water2")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Water3" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4800)
+texture = ExtResource("beach_Water3")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Water4" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4750)
+texture = ExtResource("beach_Water4")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Water5" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4700)
+texture = ExtResource("beach_Water5")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="LeftIsland" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4650)
+texture = ExtResource("beach_LeftIsland")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="RightIsland" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4600)
+texture = ExtResource("beach_RightIsland")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Rocks" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4550)
+texture = ExtResource("beach_Rocks")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Fairway" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4500)
+texture = ExtResource("beach_Fairway")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Fairway2" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4450)
+texture = ExtResource("beach_Fairway2")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Fairway3" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4400)
+texture = ExtResource("beach_Fairway3")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="FairWay4" parent="Level3" instance=ExtResource("51_bu4jf")]
+position = Vector3(0, 0, 4350)
+texture = ExtResource("beach_FairWay4")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="CargoShip" parent="Level3" instance=ExtResource("72_j4bwh")]
+position = Vector3(0, 0, 1700)
+target_id = "level3_cargoship"
+target_name = "Cargo Ship"
+is_final_target = true
+hits_required = 500
+shake_factor = 0.1
+money_per_hit = 15.0
+
+[node name="ScaledSprite" parent="Level3/CargoShip" index="0"]
 texture = ExtResource("97_673bd")
 flip_h = true
 pixel_offset = Vector2(0, 0)
 sprite_scale = 0.2
+
+[node name="Sprite3D" parent="Level3/CargoShip/ScaledSprite" index="0"]
+material_override = SubResource("CargoShipArt")
+
+[node name="CollisionShape3D" parent="Level3/CargoShip/StaticBody3D" index="0"]
+position = Vector3(428.345856, 31.898099, 0.000000)
+shape = SubResource("TargetShape_CargoShip")
+
+[node name="Lighthouse" parent="Level3" instance=ExtResource("72_j4bwh")]
+position = Vector3(0, 0, 90)
+target_id = "level3_lighthouse"
+target_name = "Lighthouse"
+is_final_target = false
+yardage_height = 25.854250
+hits_required = 25
+shake_factor = 0.1
+money_per_hit = 3.0
+
+[node name="ScaledSprite" parent="Level3/Lighthouse" index="0"]
+texture = ExtResource("97_673bd")
+flip_h = true
+pixel_offset = Vector2(0, 0)
+sprite_scale = 0.2
+
+[node name="Sprite3D" parent="Level3/Lighthouse/ScaledSprite" index="0"]
+material_override = SubResource("LighthouseArt")
+
+[node name="CollisionShape3D" parent="Level3/Lighthouse/StaticBody3D" index="0"]
+position = Vector3(-55.257123, 1.267365, 0)
+shape = SubResource("TargetShape_Lighthouse")
 
 [node name="Level3Flags" type="Node3D" parent="." unique_id=1787812774]
 
@@ -1574,12 +1842,17 @@ radius_z = 20.0
 distance_mult = 2.0
 flag_texture = ExtResource("6_o6xl0")
 
-[connection signal="timeout" from="ShotTimer" to="." method="_on_shot_timer_timeout"]
-[connection signal="frame_changed" from="Golfer/GolferSprite" to="." method="_on_golfer_sprite_frame_changed"]
-[connection signal="frame_changed" from="Golfer/GolferSprite" to="Golfer" method="_on_golfer_sprite_frame_changed"]
 
 [editable path="Level1/Destructible"]
 [editable path="Level1/Destructible2"]
 [editable path="Level1/Destructible3"]
 [editable path="Level1/Destructible4"]
 [editable path="Level1/Destructible5"]
+
+[editable path="Level2/Cactus"]
+[editable path="Level2/OilPump"]
+[editable path="Level2/TallCactus"]
+[editable path="Level2/Blimp"]
+[editable path="Level2/Pyramids"]
+[editable path="Level3/CargoShip"]
+[editable path="Level3/Lighthouse"]

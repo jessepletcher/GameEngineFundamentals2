@@ -17,17 +17,23 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-GameState="*uid://dmhajsltvgig6"
+GameState="*res://GameState.gd"
 AudioManager="*res://AudioManager.gd"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/size/mode=0
 window/size/initial_position_type=3
-window/vsync/vsync_mode=0
 window/stretch/mode="canvas_items"
+window/vsync/vsync_mode=0
+
+[game]
+
+edition="demo"
+edition.demo="demo"
+edition.full="full"
+debug_tools=false
 
 [physics]
 

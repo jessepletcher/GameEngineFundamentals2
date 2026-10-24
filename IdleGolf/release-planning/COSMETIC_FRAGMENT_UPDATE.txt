@@ -1,0 +1,63 @@
+COSMETIC FRAGMENT ISOLATION - B09
+October 23, 2026
+
+Historical B09 report. B10 Market persistence is now implemented; see
+MARKET_PERSISTENCE_UPDATE.txt for the current save and transition behavior.
+
+Completed in source with Godot 4.6 stable. Existing Windows exports need rebuilding
+to include B06-B09. No export, Steam upload or native visual QA was performed.
+
+Behavior
+
+- The two decorative fragments from each Firework explosion no longer collide
+  with ground, destructibles or other balls. Collision layer/mask are both zero,
+  and their CollisionShape3D is disabled before their first physics step.
+- Cosmetic fragments are excluded from the balls gameplay group. Destructibles
+  also explicitly require can_damage_targets(), so accidental group membership
+  cannot enable cosmetic damage.
+- Gameplay payout/chain callbacks reject cosmetic fragments. They cannot acquire
+  homing targets, explode into scoring children, consume golden flags or invest.
+- Both scoring and cosmetic objects belong to a shots lifecycle group. Switching
+  courses cancels/removes all of them immediately, including cosmetic objects
+  that are no longer found by gameplay queries.
+- Decorative fragments retain gravity-driven trail motion. At the visual landing
+  threshold they freeze, stop emissions/processing, and free after 0.5 seconds.
+  No scoring landing signal is emitted. Stopping processing also prevents trail
+  emissions from restarting during the fade.
+- Real fragments still collide and damage destructibles. Fragment counts, B08
+  payout rules and near/distant scoring compensation are unchanged.
+
+Implementation
+
+idle-golf/Ball.gd: gameplay capability guard, cosmetic physics isolation, separate
+group membership, homing/explosion rejection and cosmetic landing cleanup.
+idle-golf/Destructible.gd: capability check before counting a proximity hit.
+idle-golf/main.gd: use shots for course cleanup, reject cosmetics at reward entry.
+Tests stay outside the shipping project. Save format and paths are unchanged.
+
+Validation
+
+python tests/run_course_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  70 new cosmetic assertions covering both near (3 scoring + 2 decorative) and
+  distant (2 scoring + 2 decorative) explosions created by the actual game code.
+  Tests use real physics-space overlap queries: decorative fragments are absent
+  while scoring fragments remain detectable. Target overlap and deliberately
+  misgrouped cosmetics cause no damage, money or XP. Direct callbacks cannot
+  consume golden flags or activate scoring behavior. Motion/fade/course cleanup
+  and real-fragment destruction/landing payouts are verified.
+  Existing 420 course, 86 airborne-shot and 2,530 reward checks also passed.
+  Total: 3,106 gameplay checks, no unexpected engine errors or leaked instances.
+  Logs: .test-output/course-tests/20261023-123827-a48813/
+
+python tests/run_save_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  All 166 save assertions, close/Exit/retry/discard, forced-stop recovery and
+  the 600-frame main-scene smoke test passed.
+  Logs: .test-output/save-tests/20261023-123937-c333b4/
+
+Tests use disposable source/profile copies and do not touch actual player saves.
+
+Next release item
+
+B10: Market investment persistence across save/reload and retirement. Remaining
+Firework fragment-count description discrepancies belong to C03; B09 changes
+decorative gameplay participation, not the number of fragments generated.

@@ -1,0 +1,46 @@
+FULL GAME SANDBOX TESTER
+October 23, 2026
+
+Double-click Test Full Game.cmd in the repository root, or open:
+idle-golf/builds/windows/20261023-182755-edf65e/sandbox-test/Test Full Game.cmd
+
+Every ball, golfer and course is owned immediately. The launcher supplies level
+30, 1 quadrillion money and 1 million medals; Keep topped up replenishes spent
+currency. You can use the ordinary Shop and upgrade controls without grinding.
+
+The test panel lets you select equipment/courses, set player level, choose
+Starter/Midgame/Endgame stats, and change individual upgrade levels for free.
+Select Endgame stats to reach distant targets, then adjust aim and loft normally.
+Authored caps remain on multiball, spread and consistency multiplier upgrades.
+One-hit targets is optional and allows real hits to destroy targets immediately.
+Destroying the final target still runs the real course/game completion logic.
+Current goals: Mountain, Pyramids and Cargo Ship. The lighthouse is a nearby
+ordinary target. See COURSE_LAYOUT_UPDATE.txt for the revised scenery layout.
+
+Auto swings can be paused; Swing still uses the actual animation and launcher.
+Show / hide controls collapses the panel. Controls hide in Shop and Settings.
+Save test progress or quit normally to preserve equipment, upgrades, level and
+earned completion. One-hit mode starts OFF on relaunch; auto swings and automatic
+refills start ON. Unlocks and a minimum level of 30 are reapplied on each launch.
+Normal Settings > Reset Game clears this test profile; new sandbox unlocks are
+granted when the testing scene reloads.
+
+Test progress lives inside sandbox-test/profile/appdata/IdleGolfSandboxPlaytest/.
+Normal full/demo saves and the other testers have independent profiles.
+No ordinary progress was changed while creating or verifying this launcher.
+
+Implementation: tests/sandbox_playtest.gd is an external testing scene. The
+executable is byte-identical to the validated full-game binary in the same build.
+Test controls remain outside the production PCK. tools/package_sandbox_test.py packages and validates
+this addition; future tools/export_windows.py runs include it automatically.
+The existing base manifest remains intact; sandbox-test/sandbox-manifest.json
+records this addition's executable/script/launcher hashes and test results.
+
+Validation: 55 exported checks for access, funds, presets, upgrade caps, real
+swings, target health toggling and earned completion; 23 checks in a second
+process for retained equipment, upgrades, level and completion. All passed.
+The interactive profile remains fresh. Rendered controls and large balances
+were checked at the normal 1600x900 window size.
+
+This is for testing content and mechanics. C08/G04 progression-time testing
+still uses balance-playtest/Play Balance Test.cmd without sandbox advantages.

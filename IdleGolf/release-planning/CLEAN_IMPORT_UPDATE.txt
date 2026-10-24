@@ -1,0 +1,122 @@
+CLEAN IMPORT AND DIAGNOSTIC ENFORCEMENT - B12
+October 23, 2026
+
+Completed project-side fixes, enforced validation and rebuilt both Windows
+editions with B01-B12. The source/import/export/runtime checks passed. One bounded
+editor-only diagnostic from the pinned Godot engine remains explicitly recorded
+below; this is not a claim that the engine itself emits zero diagnostics.
+No Steam upload or new native-window/device QA was performed.
+
+Fixed behavior
+
+- The payout text queue used suspended awaits on scene-owned timers. Destroying
+  the scene during payouts left an orphaned timeout StringName. The queue now
+  advances through scene-owned callbacks, preserving four individual payouts
+  followed by a summary for a burst. Scene destruction cancels pending callbacks.
+  Removed a fallback that could start a second queue worker while one was pending.
+- The old save runner copied Godot into self-contained mode and allowed an editor
+  profiler user:// directory error. It now uses isolated APPDATA/LOCALAPPDATA/temp
+  directories and precreates its user-data directory. That error is no longer
+  allowed. Self-contained editors are rejected to protect profile isolation.
+- Editor debug/LSP/DAP ports no longer collide with an already-open editor.
+  The debugger gets an available local port; LSP/DAP request OS-assigned ports.
+  Any remaining socket failure fails validation.
+- Fresh production-only demo/full copies import on their first attempt without
+  the original UID/type-inference failures. No warm .godot cache is copied.
+
+Enforcement
+
+tools/godot_checks.py is shared by the source suites, clean-import runner, Windows
+exporter and packaged-runtime tests. Every automated Godot run uses --verbose and
+checks both stdout/stderr and the engine log. Nonzero exit codes, missing logs,
+timeouts, script errors, warnings, UID fallbacks, failed assertions, ObjectDB/RID
+leaks and orphan/unclaimed StringNames fail the run. Timeout output is retained.
+Forced-stop workers have their pre-termination diagnostics checked separately;
+their intentional killed exit status is not mistaken for a normal exit.
+
+Python -O/PYTHONOPTIMIZE is rejected so fixture/content assertions cannot vanish.
+Deliberate malformed-save tests allow only the exact ConfigFile EOF diagnostic
+at disposable case paths, at most ten times in that stage. Save failure,
+recovery and demo-import notices have exact per-stage occurrence budgets.
+The import notice occurs twice because the migration save clears the notice and
+then restores it for the player. No broad ERROR/WARNING suppression remains.
+
+tools/check_release.py runs the diagnostic-gate tests, an empty-editor baseline,
+production-only clean imports and runtime smoke tests, then all save, gameplay,
+shutdown and audio suites. tools/export_windows.py requires these checks before
+exporting and runs the packaged tests afterwards. There is no skip-checks option.
+Source hashes must remain unchanged throughout. A successful manifest is written
+only after everything passes, and records source/artifact/engine/template hashes,
+log locations and validation results. Failed attempts can leave executables but
+do not get a success manifest. This is a local command gate; it does not configure
+GitHub branch protection or restrict manual Steam uploads.
+
+The exported test setup now establishes the prior Market checkpoint before its
+early Exit probe. Recovery tests verify the backup, explicitly commit recovered
+progress, then require a clean normal launch. Test drivers remain outside the
+shipping project and execute beside byte-identical disposable executable copies.
+
+Pinned-engine exception and evidence
+
+Godot 4.6.stable.official.89cea1439 on this Windows host reports the following even
+when importing an empty project with no game scripts, assets or autoloads:
+
+  Orphan StringName: Node (static: 3, total: 4)
+  StringName: 1 unclaimed string names at exit.
+
+The production editor reports static: 7, total: 8: still exactly one extra Node
+reference. The shared gate permits only a single Node line with total-static=1
+and its single-name summary, only for this exact official engine version, and
+only during editor imports/exports. Additional references/names, repeated lines,
+ObjectDB/RID leaks, other engine versions and ALL runtime orphan reports fail.
+This remains an engine-level limitation, not a game leak fixed by this batch.
+The empty-editor reproduction now runs with every source release validation.
+
+Original reproduction: .test-output/diagnostic-minimal/output.txt
+Fresh game baseline: .test-output/diagnostic-baseline/20261023-125917/
+Final maintained baseline: .test-output/clean-checks/20261023-131416-e523ac/engine-baseline/
+LSP port-override behavior was checked against the pinned engine source:
+https://github.com/godotengine/godot/blob/4.6-stable/modules/gdscript/language_server/gdscript_language_server.cpp
+
+Validation
+
+Final command, completed successfully:
+python tools/export_windows.py --godot "C:/Users/43bat/Desktop/Godot/Godot_v4.6-stable_win64.exe"
+
+- 10 diagnostic-gate tests passed. Failure injection covers warnings/errors at
+  exit code zero, stderr-only and log-only failures, missing logs, nonzero exits,
+  timeouts with retained output, ANSI formatting, bounded exceptions, duplicate
+  notices, optimized Python rejection and self-contained editor rejection.
+- Empty-editor baseline plus first/repeat imports and 600-frame runtime smoke
+  checks passed for both fresh production editions.
+- 166 save checks passed, plus cross-process close, Exit, failed-save retry,
+  discard, forced-stop recovery and main-scene smoke tests.
+- 3,183 gameplay/shutdown checks passed: 420 course, 86 airborne-shot, 2,530
+  reward, 70 cosmetic, 71 Market and six new payout-queue/shutdown checks.
+- 91 real-mixer PCM/control audio checks passed with the Dummy output driver.
+- Both Windows release executables passed migration/isolation, release/debug
+  gating, Market save continuity, close/Exit/retry/discard, forced-stop recovery,
+  backup recovery/recommit and packaged-main-scene tests. No unexpected runtime
+  warnings or orphan/leak reports. Player saves were never used.
+
+Final evidence:
+  .test-output/windows-export/20261023-131412-7aae25/source-checks.txt
+  .test-output/windows-export/20261023-131412-7aae25/runtime-checks.txt
+  .test-output/clean-checks/20261023-131416-e523ac/
+  .test-output/save-tests/20261023-131449-1b3284/
+  .test-output/course-tests/20261023-131504-d73524/
+  .test-output/audio-tests/20261023-131523-b5600f/
+  .test-output/export-tests/20261023-131607-7cf1e6/
+
+Verified artifacts:
+  idle-golf/builds/windows/20261023-131412-7aae25/demo/IdleGolf_Demo.exe
+  idle-golf/builds/windows/20261023-131412-7aae25/full/IdleGolf.exe
+  idle-golf/builds/windows/20261023-131412-7aae25/manifest.json
+
+Remaining release work
+
+B01-B12 core reliability implementation is complete with the stated engine
+exception. Product scope/content/economy, rights/credits, Steam integration and
+broader platform QA remain on the checklist. Headless checks and mixer captures
+do not replace graphical/native-window, physical audio device, long-session,
+Steam shutdown, Cloud, controller or supported-platform testing on these builds.

@@ -1,0 +1,95 @@
+CENTRALIZED REWARD MULTIPLIERS - B08
+October 23, 2026
+
+Historical B08 report. B09 has since removed cosmetic-fragment gameplay damage
+and collisions; see COSMETIC_FRAGMENT_UPDATE.txt for that implementation/tests.
+
+Completed in source for all seven current balls and eight golfers. Tested using
+Godot 4.6 stable. Existing Windows exports do not contain B06-B08 and need rebuilding.
+No Steam upload or native visual/platform QA was performed in this batch.
+
+Corrections
+
+- Every gameplay reward now includes the catalog ball money multiplier: Homing
+  1.5x, Firework 0.5x, Pinball 0.7x, all others 1x. These values previously existed
+  in the catalog but never reached the payout path.
+- Money upgrades, level bonuses, golfer money and ball money multiply together
+  exactly once, captured at launch. XP is final earned money x 0.1 x launch XP
+  multiplier. B07 equipment/course-switching guarantees remain in place.
+- Ball flag multipliers apply to ordinary, chain and golden flag bonuses. Pin
+  Seeker's 2x flag bonus and Market's 1.5x now apply to golden rewards as well.
+- Golden fragment rewards now retain the same fragment-count compensation as
+  ordinary landing rewards. Destructible contributions remain per physical hit;
+  compensation does not increase damage or change hits required to break a target.
+- Money, lifetime money and final XP are credited through one GameState method.
+  Market cashout credits its already-accrued money/XP together; its callers no
+  longer credit money separately. Current equipment cannot multiply a pot again.
+- Help includes the corrected money formula, golden reward rule and a ball reward
+  table generated directly from catalog values.
+
+Reward contract
+
+M = (1 + money-upgrade-level x 0.09) x money-level-bonus x golfer-money x ball-money
+X = (1 + XP-upgrade-level x 0.09) x XP-level-bonus
+F = max(flag forward distance, 0) x 0.1 x flag distance multiplier x accuracy
+Accuracy is clamped to 0..1. Ordinary landing takes the best matching flag bonus.
+
+Landing: (yards^2 x 0.0002 + 5 + F x ball-flag-mult) x direct-factor x M x C
+  Direct-factor = 2.5 for a direct hit, otherwise 1.
+Pinball arrival: F x ball-flag-mult x 2.5 x M
+  Chain arrivals do not earn another base/distance payment.
+Golden extra: F x ball-flag-mult x 50 x M x C
+  Separate from the ordinary landing/chain payment, with no extra 2.5 multiplier.
+Destructible hit: money-per-hit x target-distance-in-yards x ball-destruct-mult x M
+  Destruction pays accumulated money/XP from the individual hits.
+XP for each reward: final money x 0.1 x X
+C = 1 normally, or 3/scoring-fragment-count for Firework landing/golden rewards.
+  Near fireworks: 3 scoring fragments at 1x. Distant: 2 at 1.5x each.
+Market: direct landing reward is deposited, scaled by the same-flag streak count.
+  Money and XP grow together under the existing 20%/second update. No new bonus
+  applies when cashing out. Golden extras still pay immediately.
+
+Example: a 100-yard miss with a standard golfer, no upgrades or level bonuses:
+  Standard $7 / 0.7 XP; Homing $10.50 / 1.05 XP;
+  Firework fragment $3.50 / 0.35 XP before fragment compensation;
+  Pinball $4.90 / 0.49 XP.
+
+Implementation
+
+idle-golf/RewardRules.gd contains pure calculations for combined money multipliers,
+base rewards, flag accuracy/distance, landings, pinball, golden flags, per-hit
+destructible contributions and scaling accrued rewards. It has no live GameState
+dependency and returns finalized money/XP pairs.
+GameState.credit_reward applies a pair without further multipliers. add_money
+delegates through the same rules. Refunds and purchases remain balance transfers
+and do not award XP or lifetime earnings.
+Main, Flag and Destructible route their reward calculations through RewardRules.
+Flag's golden signal carries the unmultiplied flag bonus plus fragment compensation.
+Save schema and paths are unchanged; no historical earnings are recalculated.
+
+Validation
+
+python tests/run_course_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  2,530 reward assertions: all 56 ball/golfer pairs at baseline and with upgrades
+  and level bonuses; miss/zero-distance/near/direct/chain/golden/destruction,
+  fragments, Market streak/growth, actual scene payout/XP and no double credit.
+  Independent expected factors catch missing/doubled multipliers.
+  Existing 420 course-isolation checks and 86 airborne-shot checks also passed.
+  No unexpected engine errors or leaked-instance warnings.
+  Logs: .test-output/course-tests/20261023-123443-49b85c/
+
+python tests/run_save_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  All 166 save assertions, close/Exit/retry/discard, forced-stop recovery and the
+  600-frame main-scene smoke test passed.
+  Logs: .test-output/save-tests/20261023-123443-f0fad0/
+
+All tests used disposable source/profile copies; actual player saves were untouched.
+
+Remaining release work
+
+B09: cosmetic fragments still need gameplay damage/collision removal.
+B10: persist Market investments across save/reload and retirement.
+C03: reconcile remaining growth, consistency, distance and fragment-count copy
+with mechanics. This batch does not rebalance those mechanics.
+C05: re-evaluate economy/pacing using the corrected payouts, especially reduced
+Firework and Pinball earnings and increased Homing/golden-flag earnings.

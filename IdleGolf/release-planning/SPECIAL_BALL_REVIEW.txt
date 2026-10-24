@@ -1,0 +1,60 @@
+SPECIAL BALL BEHAVIOR AND SIMPLE DESCRIPTIONS - C03
+October 23, 2026
+
+Completed for the existing Market, Pinball, Wrecking and Firework balls in source.
+The requested descriptions convey each ball's character without spelling out
+triggers, percentages, multipliers or fragment counts.
+
+Shop descriptions
+
+Market Ball: Make your money grow.
+Pin Ball: Keep the hits coming.
+Wrecking Ball: Built for breaking things.
+Firework Ball: Light up the course.
+
+GameState is the shared catalog used by Shop and ShopItem. The new text flows
+through the existing description label. Demo locks still hide paid-ball details.
+The other ball descriptions, help/reference pages and gameplay values are unchanged.
+
+Behavior review
+
+- Market deposits direct-hit rewards into persistent pots. Same-flag streaks
+  scale deposits; money and accrued XP grow together while playing. Non-deposit
+  landings, course changes and retirement cash out investments. Reload restores
+  pots without offline growth. The old 10%/s description disagreed with the
+  ledger's current growth rate and omitted other cashout paths.
+- Pinball continues a direct-hit shot through the current course's remaining
+  valid flags, retaining its launch context and stopping when the shot/course
+  becomes invalid. Chain rewards do not repeat the original distance payout.
+  The existing distance cleanup also limits chaining, so the old unconditional
+  promise to visit every flag was too broad. Its old consistency number did
+  not match the catalog value.
+- Wrecking rewards destructible hits using the ball's destruction multiplier
+  and each hit's original money/XP context. It does not have the distance boost
+  advertised by the old description. The new line describes its intended role
+  without promising extra range or faster destruction.
+- Firework bursts near the apex into scoring fragments and cosmetic particles.
+  Distant bursts use fewer scoring fragments with payout compensation; cosmetic
+  particles cannot collide, damage or reward. The old claim of six balls at the
+  apex was inaccurate. Updated a stale internal timing comment as well.
+
+No gameplay change was needed to reconcile this copy with the B07-B10 fixes.
+Also corrected the internal Market cashout comment to cover non-deposit landings,
+including another ball's direct hit. Economy tuning, including Market growth and
+Pinball consistency, remains C05; this review does not establish balanced pacing.
+
+Validation
+
+python tests/run_course_tests.py --godot "C:/Users/43bat/Desktop/Godot/Godot_v4.6-stable_win64.exe"
+
+Passed clean import and all 3,183 existing checks: 420 course, 86 shot-context,
+2,530 reward, 70 cosmetic, 71 Market-persistence and six shutdown checks. Coverage
+includes launch-time equipment, chaining/cancellation, fragment payouts/collisions,
+mixed destructible contributions, Market growth/cashout and saved investments.
+No unexpected diagnostics; only the documented B12 editor/fixture exceptions.
+
+Logs: .test-output/course-tests/20261023-133510-a75599/
+
+This batch changes catalog copy and two explanatory comments. No Windows rebuild
+or Steam upload was performed; the B12 exports still contain the old descriptions.
+Run the enforced Windows export command to include this source update in a build.

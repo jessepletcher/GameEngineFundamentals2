@@ -1,0 +1,75 @@
+INACTIVE COURSE GAMEPLAY - B06
+October 23, 2026
+
+Historical B06 report. B07 now cancels outgoing balls and pinball tweens immediately
+on course switches, superseding the finish-current-tween behavior described below.
+See SHOT_CONTEXT_UPDATE.txt for the current airborne-shot policy and validation.
+
+Completed for the current three-course layout. Source changes tested with the
+installed Godot 4.6 stable engine. Previous Windows exports are unchanged and
+must be rebuilt to include this batch; no deployment/upload was performed.
+
+Behavior
+
+- Course switching sets both scenery/destructible and flag branches to disabled
+  processing while hidden, restoring inherited processing when selected.
+- Descendant scripts, animations and node-bound tweens pause. Destructible bodies
+  explicitly use DISABLE_MODE_REMOVE, so disabled course bodies leave physics.
+  Tests use actual physics-space overlap queries, not just visibility/property checks.
+- The shared ground and golfer remain active across switches.
+- Destructibles reject hidden/dead hit and crumble callbacks; reward signals are
+  also checked at the receiving end because disabled nodes can still emit signals.
+- Flags reject inactive hit/golden/wiggle requests. Golden reward callbacks require
+  the current course's flag branch. Existing switch-time golden cleanup remains.
+- Homing chooses only processing flags. If an airborne ball's selected target is
+  disabled, homing stops and clears the target. It does not automatically retarget.
+- Hidden destructibles are excluded from yardage announcements and warning rings.
+- Partial damage survives switching. Destruction/respawn animations freeze while
+  away and resume on return; switching does not instantly restore destroyed targets.
+- Pinball validates course identity before and after each awaited flight. A switch
+  invalidates pending payouts even after an immediate return to the original course.
+  The current tween finishes, then the stale chain despawns without awarding it.
+
+Implementation
+
+idle-golf/main.gd: branch activation, source-checked rewards, chain revision guard.
+idle-golf/Ball.gd: active homing candidates, cached-target invalidation, warning filter.
+idle-golf/Destructible.gd: physics removal policy, guarded damage and announcements.
+idle-golf/Flag.gd: guarded hit/golden/wiggle entry points.
+All current course descendants inherit processing; future course additions must
+remain under their course branches and retain that processing/physics contract.
+Flags/destructibles stay in their registry groups so initialization can connect
+signals for every course. Gameplay lookups explicitly filter inactive members.
+
+Validation
+
+python tests/run_course_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  420 checks passed: 140 from each initial course (course1, course2, course3).
+  Each run switches repeatedly through every course, probes all five colliders,
+  tests real proximity hits on active targets, confirms hidden callbacks cannot
+  grant money/XP, and verifies homing and golden selection/cleanup.
+  Timed tests prove off-course crumble/respawn freezes, resumes correctly, and
+  restores collision only after respawn. Interrupted A -> B -> A pinball chains
+  give no additional reward; uninterrupted active chains still pay out.
+  Logs: .test-output/course-tests/20261023-121746-fd20bc/
+
+python tests/run_save_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+  Existing 166 save assertions passed, as did close/Exit/retry/discard, killed
+  process recovery and a 600-frame main-scene smoke test.
+  Logs: .test-output/save-tests/20261023-121547-594358/
+
+Tests used disposable project/profile data and did not touch player saves.
+No new native visual/platform QA was performed for this batch. The course tests
+exercise the engine's real physics world and scene lifecycle headlessly.
+
+Still open
+
+B07 must define complete launch-time equipment/course context for airborne balls,
+fragments and other rewards. B06 prevents inactive-target interactions; it does
+not settle every cross-course shot policy. B08 multipliers, B09 cosmetic damage,
+and B10 Market persistence/cashout consistency remain separate checklist items.
+Existing course-switch Market cashout behavior is unchanged in this batch.
+
+Engine behavior references
+https://docs.godotengine.org/en/4.6/tutorials/scripting/pausing_games.html
+https://docs.godotengine.org/en/4.6/classes/class_collisionobject3d.html

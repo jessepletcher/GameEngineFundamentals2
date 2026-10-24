@@ -1,0 +1,1004 @@
+[
+  {
+    "policy": "balanced",
+    "income_factor": 1,
+    "purchase_interval_seconds": 60,
+    "completed": true,
+    "hours": 60.75833333333333,
+    "first_purchase_minutes": 1.0,
+    "courses": [
+      {
+        "course": 1,
+        "hours": 19.041666666666668,
+        "course_hours": 19.041666666666668,
+        "level": 57,
+        "upgrades": {
+          "ball_speed": 254,
+          "consistency": 216,
+          "consistency_mult": 3,
+          "fire_rate": 216,
+          "flat_distance": 1,
+          "money_mult": 214,
+          "multi_ball": 0,
+          "multi_ball_spread": 0,
+          "xp_mult": 197
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.5499999999999999,
+          "fire_rate": 0.8500000000000002,
+          "money_mult": 0.8500000000000002,
+          "consistency": 0.5499999999999999,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 207.57599999999994,
+        "loft": 0.5973793865792114,
+        "aim": -0.17154068586652454
+      },
+      {
+        "course": 2,
+        "hours": 37.69166666666667,
+        "course_hours": 18.650000000000002,
+        "level": 61,
+        "upgrades": {
+          "ball_speed": 286,
+          "consistency": 224,
+          "consistency_mult": 3,
+          "fire_rate": 225,
+          "flat_distance": 3,
+          "money_mult": 222,
+          "multi_ball": 1,
+          "multi_ball_spread": 3,
+          "xp_mult": 205
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.6,
+          "fire_rate": 0.9000000000000002,
+          "money_mult": 0.9000000000000002,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 238.84799999999998,
+        "loft": 0.5964379880020875,
+        "aim": -0.01607485581020961
+      },
+      {
+        "course": 3,
+        "hours": 60.75833333333333,
+        "course_hours": 23.066666666666663,
+        "level": 64,
+        "upgrades": {
+          "ball_speed": 353,
+          "consistency": 229,
+          "consistency_mult": 3,
+          "fire_rate": 229,
+          "flat_distance": 3,
+          "money_mult": 227,
+          "multi_ball": 2,
+          "multi_ball_spread": 3,
+          "xp_mult": 210
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.65,
+          "fire_rate": 0.9500000000000003,
+          "money_mult": 0.9500000000000003,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 299.37600000000003,
+        "loft": 0.5977198480113936,
+        "aim": -0.5284738857528927
+      }
+    ],
+    "milestones": [
+      {
+        "event": "retirement",
+        "hours": 0.3333333333333333,
+        "medals": 56
+      },
+      {
+        "event": "unlock power",
+        "hours": 0.3333333333333333
+      },
+      {
+        "event": "unlock course2",
+        "hours": 0.6166666666666667
+      },
+      {
+        "event": "unlock speedy",
+        "hours": 0.6833333333333333
+      },
+      {
+        "event": "retirement",
+        "hours": 2.0,
+        "medals": 246
+      },
+      {
+        "event": "unlock course3",
+        "hours": 2.0
+      },
+      {
+        "event": "unlock Lion Trees",
+        "hours": 2.6666666666666665
+      },
+      {
+        "event": "complete course1",
+        "hours": 19.041666666666668
+      },
+      {
+        "event": "retirement",
+        "hours": 19.041666666666668,
+        "medals": 249
+      },
+      {
+        "event": "complete course2",
+        "hours": 37.69166666666667
+      },
+      {
+        "event": "retirement",
+        "hours": 37.69166666666667,
+        "medals": 142
+      },
+      {
+        "event": "complete course3",
+        "hours": 60.75833333333333
+      }
+    ],
+    "last_level": 64,
+    "last_upgrades": {
+      "ball_speed": 353,
+      "consistency": 229,
+      "consistency_mult": 3,
+      "fire_rate": 229,
+      "flat_distance": 3,
+      "money_mult": 227,
+      "multi_ball": 2,
+      "multi_ball_spread": 3,
+      "xp_mult": 210
+    },
+    "retirements": 4
+  },
+  {
+    "policy": "speed",
+    "income_factor": 1,
+    "purchase_interval_seconds": 60,
+    "completed": true,
+    "hours": 56.3,
+    "first_purchase_minutes": 1.0,
+    "courses": [
+      {
+        "course": 1,
+        "hours": 16.691666666666666,
+        "course_hours": 16.691666666666666,
+        "level": 56,
+        "upgrades": {
+          "ball_speed": 254,
+          "consistency": 206,
+          "consistency_mult": 3,
+          "fire_rate": 205,
+          "flat_distance": 1,
+          "money_mult": 203,
+          "multi_ball": 0,
+          "multi_ball_spread": 0,
+          "xp_mult": 184
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.5499999999999999,
+          "fire_rate": 0.8500000000000002,
+          "money_mult": 0.8000000000000002,
+          "consistency": 0.5499999999999999,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 207.57599999999994,
+        "loft": 0.5975711201571776,
+        "aim": -0.17154068586652454
+      },
+      {
+        "course": 2,
+        "hours": 33.65,
+        "course_hours": 16.958333333333332,
+        "level": 60,
+        "upgrades": {
+          "ball_speed": 286,
+          "consistency": 214,
+          "consistency_mult": 3,
+          "fire_rate": 214,
+          "flat_distance": 3,
+          "money_mult": 212,
+          "multi_ball": 1,
+          "multi_ball_spread": 3,
+          "xp_mult": 193
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.6,
+          "fire_rate": 0.9000000000000002,
+          "money_mult": 0.8500000000000002,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 238.84799999999998,
+        "loft": 0.5967845993993338,
+        "aim": -0.01607485581020961
+      },
+      {
+        "course": 3,
+        "hours": 56.3,
+        "course_hours": 22.65,
+        "level": 63,
+        "upgrades": {
+          "ball_speed": 353,
+          "consistency": 219,
+          "consistency_mult": 3,
+          "fire_rate": 219,
+          "flat_distance": 3,
+          "money_mult": 216,
+          "multi_ball": 2,
+          "multi_ball_spread": 3,
+          "xp_mult": 197
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.65,
+          "fire_rate": 0.9000000000000002,
+          "money_mult": 0.9500000000000003,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 299.37600000000003,
+        "loft": 0.5985064567845619,
+        "aim": -0.5284738857528927
+      }
+    ],
+    "milestones": [
+      {
+        "event": "retirement",
+        "hours": 0.3333333333333333,
+        "medals": 51
+      },
+      {
+        "event": "unlock power",
+        "hours": 0.3333333333333333
+      },
+      {
+        "event": "unlock course2",
+        "hours": 0.7333333333333333
+      },
+      {
+        "event": "unlock speedy",
+        "hours": 0.8
+      },
+      {
+        "event": "retirement",
+        "hours": 2.0,
+        "medals": 247
+      },
+      {
+        "event": "unlock course3",
+        "hours": 2.0
+      },
+      {
+        "event": "unlock Lion Trees",
+        "hours": 3.0
+      },
+      {
+        "event": "complete course1",
+        "hours": 16.691666666666666
+      },
+      {
+        "event": "retirement",
+        "hours": 16.691666666666666,
+        "medals": 249
+      },
+      {
+        "event": "complete course2",
+        "hours": 33.65
+      },
+      {
+        "event": "retirement",
+        "hours": 33.65,
+        "medals": 150
+      },
+      {
+        "event": "complete course3",
+        "hours": 56.3
+      }
+    ],
+    "last_level": 63,
+    "last_upgrades": {
+      "ball_speed": 353,
+      "consistency": 219,
+      "consistency_mult": 3,
+      "fire_rate": 219,
+      "flat_distance": 3,
+      "money_mult": 216,
+      "multi_ball": 2,
+      "multi_ball_spread": 3,
+      "xp_mult": 197
+    },
+    "retirements": 4
+  },
+  {
+    "policy": "income",
+    "income_factor": 1,
+    "purchase_interval_seconds": 60,
+    "completed": true,
+    "hours": 69.6,
+    "first_purchase_minutes": 1.0,
+    "courses": [
+      {
+        "course": 1,
+        "hours": 21.016666666666666,
+        "course_hours": 21.016666666666666,
+        "level": 58,
+        "upgrades": {
+          "ball_speed": 246,
+          "consistency": 220,
+          "consistency_mult": 3,
+          "fire_rate": 225,
+          "flat_distance": 1,
+          "money_mult": 223,
+          "multi_ball": 0,
+          "multi_ball_spread": 0,
+          "xp_mult": 207
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.6,
+          "fire_rate": 0.8500000000000002,
+          "money_mult": 0.8500000000000002,
+          "consistency": 0.5499999999999999,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 208.12800000000001,
+        "loft": 0.5938787163016246,
+        "aim": -0.17154068586652454
+      },
+      {
+        "course": 2,
+        "hours": 42.86666666666667,
+        "course_hours": 21.85,
+        "level": 62,
+        "upgrades": {
+          "ball_speed": 277,
+          "consistency": 232,
+          "consistency_mult": 3,
+          "fire_rate": 238,
+          "flat_distance": 3,
+          "money_mult": 235,
+          "multi_ball": 1,
+          "multi_ball_spread": 3,
+          "xp_mult": 219
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.65,
+          "fire_rate": 0.9000000000000002,
+          "money_mult": 0.9000000000000002,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 239.18399999999997,
+        "loft": 0.5933781079682872,
+        "aim": -0.01607485581020961
+      },
+      {
+        "course": 3,
+        "hours": 69.6,
+        "course_hours": 26.733333333333327,
+        "level": 65,
+        "upgrades": {
+          "ball_speed": 353,
+          "consistency": 238,
+          "consistency_mult": 3,
+          "fire_rate": 243,
+          "flat_distance": 3,
+          "money_mult": 240,
+          "multi_ball": 2,
+          "multi_ball_spread": 3,
+          "xp_mult": 224
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.65,
+          "fire_rate": 0.9500000000000003,
+          "money_mult": 0.9500000000000003,
+          "consistency": 0.65,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 299.37600000000003,
+        "loft": 0.5965582854974675,
+        "aim": -0.5284738857528927
+      }
+    ],
+    "milestones": [
+      {
+        "event": "retirement",
+        "hours": 0.3333333333333333,
+        "medals": 57
+      },
+      {
+        "event": "unlock power",
+        "hours": 0.3333333333333333
+      },
+      {
+        "event": "unlock course2",
+        "hours": 0.5666666666666667
+      },
+      {
+        "event": "unlock speedy",
+        "hours": 0.6333333333333333
+      },
+      {
+        "event": "retirement",
+        "hours": 2.0,
+        "medals": 245
+      },
+      {
+        "event": "unlock course3",
+        "hours": 2.0
+      },
+      {
+        "event": "unlock Lion Trees",
+        "hours": 2.4833333333333334
+      },
+      {
+        "event": "complete course1",
+        "hours": 21.016666666666666
+      },
+      {
+        "event": "retirement",
+        "hours": 21.016666666666666,
+        "medals": 249
+      },
+      {
+        "event": "complete course2",
+        "hours": 42.86666666666667
+      },
+      {
+        "event": "retirement",
+        "hours": 42.86666666666667,
+        "medals": 150
+      },
+      {
+        "event": "complete course3",
+        "hours": 69.6
+      }
+    ],
+    "last_level": 65,
+    "last_upgrades": {
+      "ball_speed": 353,
+      "consistency": 238,
+      "consistency_mult": 3,
+      "fire_rate": 243,
+      "flat_distance": 3,
+      "money_mult": 240,
+      "multi_ball": 2,
+      "multi_ball_spread": 3,
+      "xp_mult": 224
+    },
+    "retirements": 4
+  },
+  {
+    "policy": "balanced",
+    "income_factor": 0.75,
+    "purchase_interval_seconds": 60,
+    "completed": true,
+    "hours": 81.94166666666666,
+    "first_purchase_minutes": 1.0,
+    "courses": [
+      {
+        "course": 1,
+        "hours": 25.791666666666668,
+        "course_hours": 25.791666666666668,
+        "level": 57,
+        "upgrades": {
+          "ball_speed": 255,
+          "consistency": 217,
+          "consistency_mult": 3,
+          "fire_rate": 217,
+          "flat_distance": 0,
+          "money_mult": 214,
+          "multi_ball": 0,
+          "multi_ball_spread": 0,
+          "xp_mult": 197
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.5499999999999999,
+          "fire_rate": 0.8500000000000002,
+          "money_mult": 0.8500000000000002,
+          "consistency": 0.5499999999999999,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 208.32,
+        "loft": 0.5961138748839712,
+        "aim": -0.17154068586652454
+      },
+      {
+        "course": 2,
+        "hours": 50.608333333333334,
+        "course_hours": 24.816666666666666,
+        "level": 61,
+        "upgrades": {
+          "ball_speed": 286,
+          "consistency": 224,
+          "consistency_mult": 3,
+          "fire_rate": 225,
+          "flat_distance": 3,
+          "money_mult": 222,
+          "multi_ball": 1,
+          "multi_ball_spread": 3,
+          "xp_mult": 205
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.6,
+          "fire_rate": 0.9000000000000002,
+          "money_mult": 0.9000000000000002,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 238.84799999999998,
+        "loft": 0.5964379880020875,
+        "aim": -0.01607485581020961
+      },
+      {
+        "course": 3,
+        "hours": 81.94166666666666,
+        "course_hours": 31.33333333333333,
+        "level": 64,
+        "upgrades": {
+          "ball_speed": 353,
+          "consistency": 229,
+          "consistency_mult": 3,
+          "fire_rate": 229,
+          "flat_distance": 3,
+          "money_mult": 227,
+          "multi_ball": 1,
+          "multi_ball_spread": 3,
+          "xp_mult": 210
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.65,
+          "fire_rate": 0.9500000000000003,
+          "money_mult": 0.9500000000000003,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 299.37600000000003,
+        "loft": 0.5977198480113936,
+        "aim": -0.5284738857528927
+      }
+    ],
+    "milestones": [
+      {
+        "event": "retirement",
+        "hours": 0.3333333333333333,
+        "medals": 48
+      },
+      {
+        "event": "unlock power",
+        "hours": 0.5666666666666667
+      },
+      {
+        "event": "unlock course2",
+        "hours": 0.8
+      },
+      {
+        "event": "unlock speedy",
+        "hours": 0.8666666666666667
+      },
+      {
+        "event": "retirement",
+        "hours": 2.0,
+        "medals": 247
+      },
+      {
+        "event": "unlock course3",
+        "hours": 2.0
+      },
+      {
+        "event": "unlock Lion Trees",
+        "hours": 3.3666666666666667
+      },
+      {
+        "event": "complete course1",
+        "hours": 25.791666666666668
+      },
+      {
+        "event": "retirement",
+        "hours": 25.791666666666668,
+        "medals": 249
+      },
+      {
+        "event": "complete course2",
+        "hours": 50.608333333333334
+      },
+      {
+        "event": "retirement",
+        "hours": 50.608333333333334,
+        "medals": 139
+      },
+      {
+        "event": "complete course3",
+        "hours": 81.94166666666666
+      }
+    ],
+    "last_level": 64,
+    "last_upgrades": {
+      "ball_speed": 353,
+      "consistency": 229,
+      "consistency_mult": 3,
+      "fire_rate": 229,
+      "flat_distance": 3,
+      "money_mult": 227,
+      "multi_ball": 1,
+      "multi_ball_spread": 3,
+      "xp_mult": 210
+    },
+    "retirements": 4
+  },
+  {
+    "policy": "balanced",
+    "income_factor": 1.5,
+    "purchase_interval_seconds": 60,
+    "completed": true,
+    "hours": 40.675,
+    "first_purchase_minutes": 1.0,
+    "courses": [
+      {
+        "course": 1,
+        "hours": 12.791666666666666,
+        "course_hours": 12.791666666666666,
+        "level": 57,
+        "upgrades": {
+          "ball_speed": 253,
+          "consistency": 215,
+          "consistency_mult": 3,
+          "fire_rate": 216,
+          "flat_distance": 2,
+          "money_mult": 213,
+          "multi_ball": 0,
+          "multi_ball_spread": 0,
+          "xp_mult": 196
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.5499999999999999,
+          "fire_rate": 0.8500000000000002,
+          "money_mult": 0.8500000000000002,
+          "consistency": 0.5499999999999999,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 206.83200000000002,
+        "loft": 0.5986614651776754,
+        "aim": -0.17154068586652454
+      },
+      {
+        "course": 2,
+        "hours": 25.258333333333333,
+        "course_hours": 12.466666666666667,
+        "level": 61,
+        "upgrades": {
+          "ball_speed": 286,
+          "consistency": 224,
+          "consistency_mult": 3,
+          "fire_rate": 225,
+          "flat_distance": 3,
+          "money_mult": 222,
+          "multi_ball": 1,
+          "multi_ball_spread": 3,
+          "xp_mult": 205
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.6,
+          "fire_rate": 0.9000000000000002,
+          "money_mult": 0.9000000000000002,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 238.84799999999998,
+        "loft": 0.5964379880020875,
+        "aim": -0.01607485581020961
+      },
+      {
+        "course": 3,
+        "hours": 40.675,
+        "course_hours": 15.416666666666664,
+        "level": 64,
+        "upgrades": {
+          "ball_speed": 353,
+          "consistency": 229,
+          "consistency_mult": 3,
+          "fire_rate": 229,
+          "flat_distance": 3,
+          "money_mult": 227,
+          "multi_ball": 2,
+          "multi_ball_spread": 3,
+          "xp_mult": 210
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.65,
+          "fire_rate": 0.9500000000000003,
+          "money_mult": 0.9500000000000003,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 299.37600000000003,
+        "loft": 0.5977198480113936,
+        "aim": -0.5284738857528927
+      }
+    ],
+    "milestones": [
+      {
+        "event": "retirement",
+        "hours": 0.3333333333333333,
+        "medals": 65
+      },
+      {
+        "event": "unlock course2",
+        "hours": 0.3333333333333333
+      },
+      {
+        "event": "unlock power",
+        "hours": 0.3333333333333333
+      },
+      {
+        "event": "unlock speedy",
+        "hours": 0.3333333333333333
+      },
+      {
+        "event": "retirement",
+        "hours": 2.0,
+        "medals": 245
+      },
+      {
+        "event": "unlock course3",
+        "hours": 2.0
+      },
+      {
+        "event": "unlock Lion Trees",
+        "hours": 2.0
+      },
+      {
+        "event": "complete course1",
+        "hours": 12.791666666666666
+      },
+      {
+        "event": "retirement",
+        "hours": 12.791666666666666,
+        "medals": 249
+      },
+      {
+        "event": "complete course2",
+        "hours": 25.258333333333333
+      },
+      {
+        "event": "retirement",
+        "hours": 25.258333333333333,
+        "medals": 146
+      },
+      {
+        "event": "complete course3",
+        "hours": 40.675
+      }
+    ],
+    "last_level": 64,
+    "last_upgrades": {
+      "ball_speed": 353,
+      "consistency": 229,
+      "consistency_mult": 3,
+      "fire_rate": 229,
+      "flat_distance": 3,
+      "money_mult": 227,
+      "multi_ball": 2,
+      "multi_ball_spread": 3,
+      "xp_mult": 210
+    },
+    "retirements": 4
+  },
+  {
+    "policy": "balanced",
+    "income_factor": 1,
+    "purchase_interval_seconds": 300,
+    "completed": true,
+    "hours": 62.075,
+    "first_purchase_minutes": 5.0,
+    "courses": [
+      {
+        "course": 1,
+        "hours": 19.475,
+        "course_hours": 19.475,
+        "level": 57,
+        "upgrades": {
+          "ball_speed": 254,
+          "consistency": 216,
+          "consistency_mult": 3,
+          "fire_rate": 216,
+          "flat_distance": 1,
+          "money_mult": 214,
+          "multi_ball": 0,
+          "multi_ball_spread": 0,
+          "xp_mult": 197
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.5499999999999999,
+          "fire_rate": 0.8500000000000002,
+          "money_mult": 0.8500000000000002,
+          "consistency": 0.5499999999999999,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 207.57599999999994,
+        "loft": 0.5973793865792114,
+        "aim": -0.17154068586652454
+      },
+      {
+        "course": 2,
+        "hours": 38.358333333333334,
+        "course_hours": 18.883333333333333,
+        "level": 61,
+        "upgrades": {
+          "ball_speed": 286,
+          "consistency": 224,
+          "consistency_mult": 3,
+          "fire_rate": 225,
+          "flat_distance": 3,
+          "money_mult": 222,
+          "multi_ball": 1,
+          "multi_ball_spread": 3,
+          "xp_mult": 205
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.6,
+          "fire_rate": 0.9000000000000002,
+          "money_mult": 0.9000000000000002,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 238.84799999999998,
+        "loft": 0.5964379880020875,
+        "aim": -0.01607485581020961
+      },
+      {
+        "course": 3,
+        "hours": 62.075,
+        "course_hours": 23.71666666666667,
+        "level": 64,
+        "upgrades": {
+          "ball_speed": 353,
+          "consistency": 229,
+          "consistency_mult": 3,
+          "fire_rate": 229,
+          "flat_distance": 3,
+          "money_mult": 227,
+          "multi_ball": 1,
+          "multi_ball_spread": 3,
+          "xp_mult": 210
+        },
+        "golfer": "Lion Trees",
+        "bonuses": {
+          "ball_speed": 0.65,
+          "fire_rate": 0.9500000000000003,
+          "money_mult": 0.9500000000000003,
+          "consistency": 0.6,
+          "xp_mult": 0.0
+        },
+        "ball": "wrecking",
+        "hit_probability": 0.9799999999999993,
+        "speed": 299.37600000000003,
+        "loft": 0.5977198480113936,
+        "aim": -0.5284738857528927
+      }
+    ],
+    "milestones": [
+      {
+        "event": "retirement",
+        "hours": 0.3333333333333333,
+        "medals": 51
+      },
+      {
+        "event": "unlock power",
+        "hours": 0.3333333333333333
+      },
+      {
+        "event": "unlock course2",
+        "hours": 0.8333333333333334
+      },
+      {
+        "event": "unlock speedy",
+        "hours": 0.8333333333333334
+      },
+      {
+        "event": "retirement",
+        "hours": 2.0,
+        "medals": 247
+      },
+      {
+        "event": "unlock course3",
+        "hours": 2.0
+      },
+      {
+        "event": "unlock Lion Trees",
+        "hours": 3.0
+      },
+      {
+        "event": "complete course1",
+        "hours": 19.475
+      },
+      {
+        "event": "retirement",
+        "hours": 19.475,
+        "medals": 249
+      },
+      {
+        "event": "complete course2",
+        "hours": 38.358333333333334
+      },
+      {
+        "event": "retirement",
+        "hours": 38.358333333333334,
+        "medals": 142
+      },
+      {
+        "event": "complete course3",
+        "hours": 62.075
+      }
+    ],
+    "last_level": 64,
+    "last_upgrades": {
+      "ball_speed": 353,
+      "consistency": 229,
+      "consistency_mult": 3,
+      "fire_rate": 229,
+      "flat_distance": 3,
+      "money_mult": 227,
+      "multi_ball": 1,
+      "multi_ball_spread": 3,
+      "xp_mult": 210
+    },
+    "retirements": 4
+  }
+]

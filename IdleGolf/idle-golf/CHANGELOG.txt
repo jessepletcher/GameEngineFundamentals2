@@ -1,4 +1,30 @@
-Idle Golf Demo Changelog
+Idle Golf Changelog
+
+Unreleased - Inactive course isolation (B06)
+- Pause hidden course branches and remove their destructibles from physics.
+- Ignore hidden flags/destructibles in targeting, hit checks and reward callbacks.
+- Stop homing toward a flag when its course becomes inactive.
+- Preserve partial damage and pause destruction/respawn animations while away.
+- Reject pinball chain payouts after a course switch, including switching away/back.
+- Added isolated scene/physics regressions for all three starting courses.
+
+0.1.1 development - Separate editions and Windows release testing
+- Added explicit demo/full export features and separate stable save files.
+- Import valid demo progress into a new full save without changing demo files.
+- Preserve existing full progress/recovery files over any demo import.
+- Decoupled F1 developer tools from content gates; release builds cannot enable them.
+- Added reproducible Windows exports, artifact/source hashes and exported runtime tests.
+- Release custom cursor textures and pending scene timers during shutdown.
+
+Unreleased - Save protection and quitting
+- Added versioned saves, integrity checks, validated reads and legacy demo migration.
+- Save through a checked temporary file, preserve a backup, then replace the primary.
+- Recover from backups/interrupted writes while retaining original recovery copies.
+- Block autosave over unreadable or newer-version saves; report save failures.
+- Fixed window-close handling and routed Settings Exit through the same save/quit path.
+- Offer retry, keep playing or explicit quit without saving after an exit-save failure.
+- Preserve the current session if a confirmed reset cannot be saved.
+- Use a resource path for GameState autoload so clean imports resolve it immediately.
 
 v0.1.0-demo
 - Added public demo content locks with visible Full Game shop states.

@@ -1,0 +1,135 @@
+{
+  "policy": "balanced",
+  "income_factor": 1.0,
+  "purchase_interval_seconds": 60.0,
+  "completed": false,
+  "hours": 120.0,
+  "first_purchase_minutes": 1.0,
+  "courses": [
+    {
+      "course": 1,
+      "hours": 23.683333333333334,
+      "course_hours": 23.683333333333334,
+      "level": 58,
+      "upgrades": {
+        "ball_speed": 244,
+        "consistency": 224,
+        "consistency_mult": 1,
+        "fire_rate": 224,
+        "flat_distance": 3,
+        "money_mult": 222,
+        "multi_ball": 0,
+        "multi_ball_spread": 0,
+        "xp_mult": 205
+      },
+      "golfer": "Lion Trees",
+      "bonuses": {
+        "ball_speed": 0.6,
+        "fire_rate": 0.8500000000000002,
+        "money_mult": 0.8500000000000002,
+        "consistency": 0.5499999999999999,
+        "xp_mult": 0.0
+      },
+      "ball": "wrecking",
+      "hit_probability": 0.9799999999999993,
+      "speed": 206.59199999999998,
+      "loft": 0.599195938921238,
+      "aim": -0.17154068586652454
+    },
+    {
+      "course": 2,
+      "hours": 116.525,
+      "course_hours": 92.84166666666667,
+      "level": 66,
+      "upgrades": {
+        "ball_speed": 277,
+        "consistency": 257,
+        "consistency_mult": 2,
+        "fire_rate": 257,
+        "flat_distance": 3,
+        "money_mult": 255,
+        "multi_ball": 0,
+        "multi_ball_spread": 0,
+        "xp_mult": 238
+      },
+      "golfer": "Lion Trees",
+      "bonuses": {
+        "ball_speed": 0.65,
+        "fire_rate": 1.0000000000000002,
+        "money_mult": 0.9500000000000003,
+        "consistency": 0.65,
+        "xp_mult": 0.0
+      },
+      "ball": "wrecking",
+      "hit_probability": 0.9799999999999993,
+      "speed": 239.18399999999997,
+      "loft": 0.5940770974647749,
+      "aim": -0.01607485581020961
+    }
+  ],
+  "milestones": [
+    {
+      "event": "retirement",
+      "hours": 0.3333333333333333,
+      "medals": 56
+    },
+    {
+      "event": "unlock power",
+      "hours": 0.3333333333333333
+    },
+    {
+      "event": "unlock course2",
+      "hours": 0.6166666666666667
+    },
+    {
+      "event": "unlock speedy",
+      "hours": 0.6833333333333333
+    },
+    {
+      "event": "retirement",
+      "hours": 2.0,
+      "medals": 246
+    },
+    {
+      "event": "unlock course3",
+      "hours": 2.0
+    },
+    {
+      "event": "unlock Lion Trees",
+      "hours": 2.5
+    },
+    {
+      "event": "complete course1",
+      "hours": 23.683333333333334
+    },
+    {
+      "event": "retirement",
+      "hours": 23.683333333333334,
+      "medals": 249
+    },
+    {
+      "event": "complete course2",
+      "hours": 116.525
+    },
+    {
+      "event": "retirement",
+      "hours": 116.525,
+      "medals": 221
+    }
+  ],
+  "last_level": 66,
+  "last_upgrades": {
+    "ball_speed": 236,
+    "consistency": 217,
+    "consistency_mult": 2,
+    "fire_rate": 217,
+    "flat_distance": 3,
+    "money_mult": 214,
+    "multi_ball": 1,
+    "multi_ball_spread": 1,
+    "xp_mult": 198
+  },
+  "retirements": 4,
+  "snapshot_sha256": "43dc69947704e115521e9952731fbf9c4ce04db91dd06396b7f473276822e76f",
+  "scope": "Original prices, with the same target-farming model and purchase/retirement policy; excludes the old unbounded Market strategy."
+}

@@ -1,0 +1,298 @@
+IDLE GOLF STEAM RELEASE CHECKLIST
+Created October 22, 2026. All unchecked items require work or explicit verification.
+Implementation batches: B01-B12 completed with source, real-scene/physics,
+persistence and audio PCM tests. B12 rebuilt both Windows editions and enforced
+source/import/export/runtime checks; one bounded editor-engine diagnostic remains.
+C01 targets, C02 golfer review, C03 simple descriptions, C06 saved completion and the C05 first
+economy balance pass are implemented. C08/G04 real-player pacing remains open.
+See COURSE_LAYOUT_UPDATE.txt for current layouts, Windows builds and test launcher.
+See SAVE_RELIABILITY_UPDATE.txt, BUILD_SEPARATION_UPDATE.txt,
+COURSE_ISOLATION_UPDATE.txt, SHOT_CONTEXT_UPDATE.txt, REWARD_RULES_UPDATE.txt,
+COSMETIC_FRAGMENT_UPDATE.txt, MARKET_PERSISTENCE_UPDATE.txt, AUDIO_RELIABILITY_UPDATE.txt
+and CLEAN_IMPORT_UPDATE.txt (B12 validation history).
+Evidence and detailed completion criteria: STEAM_RELEASE_ANALYSIS.txt.
+Owner's current scope/platform/pacing decisions: RELEASE_SCOPE.txt.
+
+P0 = release gate. P1 = recommended before 1.0. P2 = optional/future unless promised.
+Role names indicate proposed responsibility, not an assigned individual.
+Conditional work becomes a release gate if it appears in store promises.
+[n/a] marks an explicitly excluded feature, not unfinished release work.
+
+A. PRODUCT DECISIONS -- Owner: game/design owner -- Milestone A
+
+[x] A01 P0 Define final courses, balls, golfers and mechanics for 1.0.
+    Done: a bounded content list; unfinished relics excluded unless explicitly scoped.
+    Selected: all 3 current courses, 7 balls, 8 golfers and current mechanics ship.
+    Playable roster is recorded in RELEASE_SCOPE.txt. Owner explicitly deferred
+    the disconnected relic prototype beyond 1.0. Finishing/polish still required.
+[x] A02 P0 Define target pacing and completion/mastery goal.
+    Done: target first-retirement, major unlock and final-goal timings are recorded.
+    Selected: destroy each course's furthest target, approximately 20 hours per
+    course (~60 total). First retirement target: 15-30 minutes; early course/equipment
+    access: ~30-60 minutes, with later access around 2-3 hours. C05 models these
+    targets; C08/G04 must measure actual play. See ECONOMY_BALANCE_UPDATE.txt.
+[x] A03 P0 Choose offline earnings policy and communicate it.
+    Done: either no offline earnings stated clearly, or capped/reliable rules tested.
+    Selected: no offline earnings. Recorded in RELEASE_SCOPE.txt and shipped README;
+    existing help already states that Market investments do not grow while closed.
+[ ] A04 P0 Choose supported OS, input methods and launch languages.
+    Done: store claims match the QA matrix; Linux/Deck are separate decisions.
+    Selected desktop targets: Windows, macOS and Linux. Touch/mobile is later work.
+    Existing mouse/keyboard controls are the working input baseline; controller/
+    Deck is uncommitted. English plus 9 requested languages are recorded in
+    RELEASE_SCOPE.txt; additional launch languages depend on localization effort.
+    Final language set/specs and actual platform validation remain open.
+[x] A05 P0 Decide demo-to-full save policy and paid-content distinction.
+    Done: migration/separation rules documented with acceptance fixtures.
+    Policy: one-time read-only demo import only when all full save/recovery paths
+    are absent; existing full progress always wins. Existing demo catalog gates retained.
+[ ] A06 P1 Set price positioning, marketing promise and support capacity.
+    Done: price justified against scoped content/comparables; no unsupported claims.
+
+B. CORE RELIABILITY -- Owner: engineering -- Milestone B
+
+[x] B01 P0 Add versioned, validated save loading and migrations.
+    Done: supported old saves and bad/missing fields have deterministic outcomes.
+    Implemented for legacy demo and versioned demo/full progress, including import.
+[x] B02 P0 Add safe replacement, backups and save/load error handling. Depends: B01.
+    Done: malformed/unwritable/interrupted-save tests preserve recoverable progress.
+[x] B03 P0 Consolidate save-and-quit behavior. Depends: B02.
+    Done: X/Alt+F4/Settings Exit terminate; forced-stop recovery is tested separately.
+    Verified both exported Windows runtimes, retry/discard signals, killed processes,
+    and native Windows X/Alt+F4/Settings Exit. Broader platform/Steam QA remains G06/G07.
+[x] B04 P0 Make demo/full builds explicit and gate debug tools separately. Depends: A05.
+    Done: both builds work; full release F1 cannot expose the debug camera.
+[x] B05 P0 Implement migration/isolation and stable save identity. Depends: B01/B04.
+    Done: running demo/full in either order cannot destroy paid-game progress.
+[x] B06 P0 Deactivate inactive-course gameplay. Depends: A01.
+    Done: hidden targets cannot collide, reward, attract homing or process gameplay.
+    Verified all three starting courses and repeated switches: real collision queries,
+    hit/reward guards, homing, paused respawns and stale pinball payouts. Scope is the
+    existing three-course layout; future course content still requires A01/C01 validation.
+[x] B07 P0 Define equipment/course switching with airborne shots. Depends: B06.
+    Done: launches, fragments, chains and impacts use consistent shot context.
+    Policy: equipment/upgrades affect new shots; existing shots retain launch stats.
+    Switching courses cancels outgoing balls and chains, retaining earned rewards.
+    Destructible hits and Market deposits retain their individual reward/XP context.
+    Verified all seven ball types, fragments, chains, golden flags, mixed impacts,
+    multiball and course-switch cashout. Included in the B12 Windows rebuild.
+[x] B08 P0 Fix all reward multipliers and centralize payout rules. Depends: B07.
+    Done: deterministic cases cover all balls, golfers and reward types.
+    RewardRules centralizes calculations; GameState credits final money/XP once.
+    Ball money multipliers now apply throughout, and flag bonuses also multiply
+    golden rewards. All 56 ball/golfer combinations tested with/without upgrades.
+    2,530 reward checks plus 506 existing gameplay checks passed. Included in the
+    B12 Windows rebuild. Balance/description review remains C03/C05.
+[x] B09 P0 Remove cosmetic fragment damage/collisions.
+    Done: fake fragments cannot hit destructibles or generate gameplay rewards.
+    Cosmetic fragments have zero collision layers/masks and disabled shapes, and
+    are excluded from gameplay groups and damage/reward/homing/explosion entry points.
+    Shared shot cleanup still cancels them on course switches. 70 dedicated checks
+    passed for near/distant fireworks, actual physics queries and real payouts.
+[x] B10 P0 Preserve Market investments through transitions. Depends: B01/B03/B08.
+    Done: save/reload, retirement, course changes and normal cashout agree.
+    Save v2 persists per-flag money/XP and streak; v0/v1 migrate with empty pots.
+    Reload restores pots without offline growth. Retirement cashes out before
+    medals/records, and rolls back on save failure. Missing targets cash out safely.
+    71 dedicated checks and cross-process quit/retry/discard/crash tests passed.
+    B12 Windows rebuild verifies v2 Market saves through cross-process quit/recovery.
+[x] B11 P1 Fix mute-on-start/unmute and ambience restart behavior.
+    Done: audible tests pass for restart, shop entry/exit, mute and scene reload.
+    91 real-mixer PCM/control checks verify silent mute and audible samples after
+    resume, using actual assets and scene/shop callbacks with a Dummy output driver.
+    Ambience loops by playback position; shop/mute share one pause policy. Active
+    SFX stop on mute; ducking no longer changes master volume. Physical playback
+    device/listening QA remains platform QA. Included in the B12 Windows rebuild.
+[x] B12 P1 Fix initial clean-import diagnostics and enforce diagnostic checks.
+    Done: fresh demo/full copies import/build without script errors; source and
+    packaged-runtime checks are mandatory in the Windows export command. Shared
+    verbose stdout/stderr/log gates reject unexpected diagnostics, leaks and exits.
+    Fixed the profiler path error and payout-queue timeout orphan on scene teardown.
+    3,440 source checks plus 10 gate tests and both packaged Windows suites passed.
+    Exception: the pinned editor's single extra Node StringName is reproduced in
+    an empty project and strictly bounded; no runtime orphan report is accepted.
+    See CLEAN_IMPORT_UPDATE.txt for verified builds, logs and remaining platform QA.
+
+C. CONTENT AND BALANCE -- Owner: design/art/audio/engineering -- Milestone C
+
+[x] C01 P0 Finish every promised course's layout and gameplay. Depends: A01/B06.
+    Done: each has a distinct reason to play, correct rewards and tested equipment.
+    Author/identify a furthest destructible as each course's completion target.
+    Five destructibles in Big Piney/Desert; two original objects on Beach.
+    Final targets: Mountain (1,500 world units), Pyramids (2,000; shared health)
+    and Cargo Ship (1,700). Ordinary lighthouse at 90 (~98 displayed yards).
+    Removed the extra Beach props and restored Desert foreground placement/depth.
+    All 14 hitboxes reached with real shots; visible-art alignment, destruction,
+    payouts, respawn and course isolation verified. 177 target checks pass.
+    See COURSE_LAYOUT_UPDATE.txt. C05 has a first model/balance pass; C08 pacing
+    remains open. Current Windows builds include targets and saved completion.
+[x] C02 P0 Finalize golfer roster, passives and animation standard. Depends: A01/B08.
+    Done: each promised golfer works and has finished presentation.
+    All eight have distinct five-pose swings and real portraits. Unified timed
+    contact, golfer-aware animation rate and safe windup cancellation replace
+    immediate/static and frame-event releases. Simple descriptions match passives.
+    Money Daily now precedes Shop Keep (12 medals/level 6). Stable save IDs remain.
+    366 golfer checks, rendered roster review and the full source/export gate pass.
+    Windows golfer tester unlocks all eight in separate saves; see GOLFER_REVIEW_UPDATE.txt.
+[x] C03 P0 Finish special balls and reconcile descriptions. Depends: B07/B08/B09/B10.
+    Done: Market, Pinball, Wrecking and Firework text match verified behavior.
+    Reviewed current deposit/cashout, chain, destruction and fragment behavior.
+    Replaced outdated numerical claims with short, simple descriptions as requested.
+    All 3,183 original gameplay checks passed. C05 has a first economy tuning pass;
+    current Windows builds include these descriptions and the expanded suite.
+[ ] C04 P1 Replace placeholder icons/names/art and unify branding.
+    Done: remaining placeholder catalog entries are finished or removed from scope.
+    C02 replaced five golfer entries. Five remain: Market, Wrecking and Pin Ball
+    icons; Course 2/3 names/icons. Broader branding still needs review.
+[x] C05 P0 Model economy and rebalance prestige/medal costs. Depends: A02/B08/C03.
+    Done: late upgrades and record-based retirement fit the target playtime.
+    Owner target: ~20 hours per course, ~60 hours across all three; account for
+    carried-over progression and no offline earnings. First balance pass implemented:
+    shared speed-price curve, affordable medal costs, bounded Market growth/streaks.
+    Revised-layout model: 19.04 / 23.90 / 20.99 hours, 63.93 total. 207 economy and
+    9 real-physics calibration checks passed; source/export gates enforce them.
+    These are estimates, not observed completion times. Purchase priorities and
+    active income change the results; special-ball/player validation remains C08/G04.
+    See ECONOMY_BALANCE_UPDATE.txt for assumptions, scenarios and test instructions.
+[x] C06 P0 Implement the chosen completion/mastery goals. Pacing tracked in A02/C05.
+    Done: final-target destruction records a persistent course/game milestone.
+    Selected finish condition: actually destroy the furthest target on each course;
+    all three completed courses finish the main game. Uses C01's stable target IDs,
+    schema-3 saves, a progress button and course/game completion feedback.
+    Respawns, switches, restarts and retirement preserve milestones; confirmed
+    Reset Game clears them. Failed writes retain earned completion for retry.
+    55 completion assertions include rejecting lighthouse destruction as Beach
+    completion. Previously earned Beach milestones remain saved. Source gates,
+    exported runtime checks and four
+    separate-process completion-launcher checks passed. See COMPLETION_UPDATE.txt.
+    C05 now models affordable progression; C08/G04 still need observed fresh-save pacing.
+[ ] C07 P1 Define golden-flag reachability/expiry rules.
+    Done: target selection cannot unintentionally stall that feature indefinitely.
+[ ] C08 P1 Validate fresh-save pacing with unfamiliar players. Depends: C01-C06.
+    Done: observed unlock/retirement times and reasons for confusion are recorded.
+[n/a] C09 P2 Offline earnings. Owner selected no offline earnings under A03.
+    Not planned for 1.0 and not a release gate; retain no growth while closed.
+
+D. PLAYER EXPERIENCE -- Owner: UI/design/engineering -- Milestone C
+
+[ ] D01 P1 Add first-session guidance and understandable next goals.
+    Done: new players adjust shots, buy upgrades and explain retirement unaided.
+[ ] D02 P1 Explain bulk-buy/refund controls and unify stat previews.
+    Done: visible help matches current controls, prices and caps.
+[ ] D03 P1 Add useful persistent volume controls and finish audio mixing.
+    Done: quiet/loud situations and startup-muted tests pass.
+[ ] D04 P1 Add reduced motion/shake and readable UI/text sizing.
+    Done: 720p/high-DPI text is usable and important cues are not color-only.
+[ ] D05 P1 Add consistent back/cancel and deliberate focus handling.
+    Done: menus and confirmations can be entered/exited without getting stuck.
+[ ] D06 P1 Test display changes and recoverability.
+    Done: promised resolutions, aspect ratios, DPI, monitors and Alt+Tab work.
+[ ] D07 P1 Define pause/background simulation, audio and FPS policies.
+    Done: minimize/focus/suspend behavior is consistent with the idle-game promise.
+[ ] D08 P2 Add full controller/Deck support only if selected. Depends: A04/D05/D06.
+    Done: complete no-mouse run, hotplug, prompts, suspend/resume and device testing.
+[ ] D09 P2 Localize only promised languages. Depends: A04/C03/D01.
+    Done: all shipped UI/help fits and is reviewed in each listed language.
+    Requested if manageable: English, French, Brazilian Portuguese, Spain Spanish,
+    Simplified Chinese, German, Traditional Chinese, Latin American Spanish,
+    Japanese and Russian. Inventory strings/fonts/layouts before committing the
+    additional launch languages. Any promised language becomes a release gate.
+[ ] D10 P2 Add touchscreen support for a possible future mobile version.
+    Explicitly deferred beyond desktop 1.0; touch controls, UI and mobile testing
+    are separate future work, not current release requirements.
+
+E. RIGHTS AND DISTRIBUTION -- Owner: production/release -- Parallel A through E
+
+[ ] E01 P0 Complete asset register and resolve font/audio/art rights.
+    Done: provenance, commercial permission, proof and attribution for every asset.
+[ ] E02 P0 Finish credits and engine/third-party notices. Depends: E01.
+    Done: notices are in the exact shipping package and accessible to players.
+[ ] E03 P0 Create repeatable demo/full export and clean packaging. Depends: B04/B12.
+    Done: pinned engine/templates, correct product versions and documented commands.
+    Progress: tools/export_windows.py exports both Windows editions with Godot 4.6.
+    Windows/macOS/Linux are selected targets. Linux full and macOS presets/pipeline,
+    final shipping notices and content filtering remain open.
+[ ] E04 P0 Record source revision/configuration and artifact hashes. Depends: E03.
+    Done: one authoritative artifact per version; stale staging cannot be confused.
+    Progress: timestamped Windows output includes engine/template/source/artifact
+    SHA-256 manifest. Source revision unavailable because the workspace Git link is broken.
+[ ] E05 P1 Audit exported resources, dependencies and icon consistency.
+    Done: unused/unlicensed content excluded; intended renderer/runtime files included.
+[ ] E06 P0 Verify actual minimum specs and platform support. Depends: A04/E03.
+    Done: exact exported builds tested on clean target machines, including low-end GPU.
+[ ] E07 P0 Prepare logs/support/recovery and rollback instructions.
+    Done: support can identify build/save issues and restore a known-good release.
+
+F. STEAM -- Owner: Steamworks/release owner -- Parallel A through E
+
+[ ] F01 P0 Verify onboarding, agreements, tax/bank, app fee and permissions.
+    Done: actual dashboard prerequisites complete and eligibility date recorded.
+[ ] F02 P0 Complete Content Survey and applicable ratings/disclosures.
+    Done: answers accurately describe shipped content and intended markets.
+[ ] F03 P0 Create accurate store copy, features, languages, specs and pricing.
+    Depends: A01-A06/E06. Done: every claim maps to verified content/behavior.
+[ ] F04 P0 Produce required capsule/library art and gameplay screenshots.
+    Depends: E01/C04. Done: current templates/sizes and Steam previews pass.
+[ ] F05 P1 Produce gameplay trailer, press kit and announcement plan.
+    Depends: C01-C04. Done: captures represent the release candidate.
+[ ] F06 P0 Submit store review and publish Coming Soon when ready.
+    Done: approved public page meets the required visibility period before launch.
+[ ] F07 P0 Configure depots/packages/launch options and private beta branch.
+    Depends: E03. Done: Steam installs, launches and updates the right platform build.
+[ ] F08 P1 Configure/test Steam Cloud if selected. Depends: B01/B02/B05.
+    Done: progress syncs across a player's devices; different Steam users remain
+    isolated; machine display settings stay local.
+[ ] F09 P2 Add achievements only if committed. Depends: C06.
+    Done: legitimate milestones, persistence and offline reconciliation tested.
+[ ] F10 P0 Submit near-final build, resolve review feedback and verify readiness.
+    Depends: F02/F03/F06/F07 and all P0 game gates. Done: both checklists approved.
+[ ] F11 P0 Schedule owner-operated launch after reviews and eligibility.
+    Done: release owner, date/time, final build, support and rollback are confirmed.
+
+G. RELEASE QA -- Owner: QA/release -- Milestones D and E
+
+[ ] G01 P0 Pass save/recovery/migration regression matrix. Depends: B01-B05/B10.
+    Done: no silent data loss; demo/full and prior-version fixtures survive.
+[ ] G02 P0 Pass rewards, purchases/refunds, caps and retirement tests.
+    Depends: B08/C05. Done: tested outputs match documented rules.
+[ ] G03 P0 Complete all ball/golfer/course and transition coverage.
+    Depends: B06-B10/C01-C03. Done: no hidden-course or shot-switching exploits.
+[ ] G04 P0 Complete fresh-save to main goal without debug assistance.
+    Depends: C06/C08. Done: no progression blockers and agreed pacing achieved.
+[ ] G05 P1 Pass long idle/worst-effects soak and performance budget.
+    Done: begin with 8-hour sessions; no unbounded memory/effects or earnings drift.
+[ ] G06 P0 Pass exported platform/display/input/audio matrix.
+    Depends: D03-D08/E06. Done: all promised configurations validated.
+[ ] G07 P0 Pass Steam clean-install/update/offline/selected-feature tests.
+    Depends: F07/F08/F09 as applicable. Done: no developer-machine dependencies.
+[ ] G08 P0 Test update and rollback with existing saves. Depends: E04/E07.
+    Done: compatible recovery plan exists; rollback cannot silently corrupt progress.
+[ ] G09 P0 Review final bug list and store-to-build parity.
+    Done: no open data-loss, launch/crash, progression-blocking or major economy bugs;
+    all advertised features work; accepted minor issues are documented.
+
+H. LAUNCH AND AFTERCARE -- Owner: release/support -- Milestone F
+
+[ ] H01 P0 Archive exact release artifact, manifest and known-good predecessor.
+[ ] H02 P0 Manually release the approved app and verify a customer-path install.
+[ ] H03 P1 Publish launch information and current support/known-issues guidance.
+[ ] H04 P1 Monitor critical reports, triage reproducible bugs and prepare hotfixes.
+[ ] H05 P1 Review feedback and progression evidence before choosing new features.
+
+RECOMMENDED CRITICAL PATH
+
+A decisions -> B reliability -> C complete/balanced loop -> G external QA -> F10/H launch.
+E01/E02 rights and F01/F02/F04/F06 account/store work run in parallel where ready.
+Cloud follows save design; achievements follow goals; balance follows payout fixes.
+Optional multiplayer, leaderboards, Workshop, trading cards, extra platforms and
+additional content systems are outside this proposed 1.0 scope unless selected.
+
+STEAM TIMING REFERENCES, CHECKED OCTOBER 22, 2026
+
+Official onboarding currently lists a 21-day fee-to-release wait for the first few
+titles and at least two weeks of Coming Soon visibility. Verify the actual app's
+eligibility date. Review guidance recommends at least 7 business days per store/
+build submission, with buffer for changes; approval does not trigger release.
+[Onboarding](https://partner.steamgames.com/doc/gettingstarted/onboarding)
+[Review process](https://partner.steamgames.com/doc/store/review_process)
+[Release process](https://partner.steamgames.com/doc/store/releasing)

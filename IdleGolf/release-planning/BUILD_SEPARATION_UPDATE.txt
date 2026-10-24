@@ -1,0 +1,121 @@
+DEMO/FULL SEPARATION AND WINDOWS VALIDATION
+October 23, 2026
+
+Completed: A05 policy and B04-B05 implementation. B01-B03 were rechecked in
+exported Windows release runtimes and native UI. These are development builds,
+not a declaration that the full game is complete or ready for Steam submission.
+
+Builds to use
+
+idle-golf/builds/windows/20261023-120432-455e6f/
+  demo/IdleGolf_Demo.exe
+  full/IdleGolf.exe
+  manifest.json
+
+Both executables embed their PCK. Godot 4.6 stable, official 89cea1439, Windows
+x86_64 release templates; product metadata 0.1.1-demo / 0.1.1-full. No upload or
+publishing was performed. The manifest records SHA-256 for the engine, template,
+source snapshot and executables. Git revision could not be obtained because the
+workspace Git link cannot resolve its parent repository. Runtime source hashes
+were checked against the final manifest. Documentation was updated after export.
+
+Implemented policy
+
+- Export presets are Windows Demo (demo feature), Windows Full (full feature),
+  and Linux Demo (demo feature; Linux was not exported/tested in this batch).
+- BuildProfile reads game/edition with feature overrides. The editor defaults to
+  demo; changing game/edition to full allows full-content editor testing.
+- Debug tools require both a debug runtime AND game/debug_tools=true. Release
+  builds cannot enable F1 even if that setting is accidentally enabled.
+- Keep application/config/name="IdleGolf" permanently. It determines user://.
+  Windows saves stay under %APPDATA%/Godot/app_userdata/IdleGolf/.
+- Demo keeps idle_golf_demo_v0_1.cfg for compatibility. Full uses idle_golf_full.cfg.
+  These filenames are stable identities, not version numbers to change each release.
+- Full imports demo progress only when its primary, pending and backup paths are
+  all absent. The validated import is committed before gameplay. Demo files are
+  read only: no writing, rotating or recovery archiving in the demo's slot.
+- Primary demo progress is preferred; validated pending/backup progress can be
+  imported if necessary. A newer-version source prevents downgrading to an old backup.
+- Existing full saves/recovery files always take precedence, including damaged
+  files. Import must never silently replace paid-game progress with demo progress.
+- Unrecoverable/newer demo data blocks automatic import/saving and explains how
+  to restore/update or explicitly Reset Game to start the full game fresh.
+- Reset affects only the running edition, preserves recovery copies, and commits
+  a reset save so restarting does not reimport the demo. Import write failures
+  retain the imported session for retry and never alter the source demo.
+- Full content availability uses the existing catalog. This does not complete
+  unfinished courses, balance, descriptions or gameplay mechanics.
+
+Additional shutdown fixes found during graphical testing
+
+- Clear the custom mouse cursor while the rendering server is alive to release
+  its retained texture reference. This removed graphical shutdown texture/RID errors.
+- Replace main-scene SceneTreeTimers with owned one-shot Timer children. Pending
+  delays now end with their scene on quit/reload; the observed timer-instance leak
+  warning no longer appears. Delay durations and pause behavior are retained.
+- Verbose logging in one final full run still reports two unclaimed StringNames
+  (Node and timeout), without ERROR, RID or ObjectDB-instance leak warnings. This
+  remaining diagnostic is recorded under B12, not presented as fully resolved.
+
+Validation evidence
+
+Source regression: .test-output/save-tests/20261023-120512-ca3fb1/summary.json
+  166 assertions passed, plus close, Exit, retry, discard, forced-stop recovery,
+  and a 600-frame main-scene smoke. Corruption, interrupted writes, future schemas,
+  migration isolation, recovery precedence, read-only sources and resets covered.
+
+Export regression: .test-output/export-tests/20261023-120530-d0ac9a/summary.json
+  25 stages passed across both final release executables, including two separately
+  killed processes and reload verification. Legacy import preserved source bytes;
+  full ownership/equipment survived a demo run. Full-first and demo-first order,
+  reset without reimport, backups, F1 gating and both main scenes were checked.
+  Release templates ignore --script, so the harness uses external test scenes via
+  override.cfg beside SHA-256-verified identical copies of each executable. No
+  test code is packed into the release artifacts. Main-scene tests remove overrides.
+
+Native graphical validation: .test-output/export-ui/native-ui/ and final-ui/
+  Exact release executables, original packaged main scene, isolated APPDATA and
+  LOCALAPPDATA, windowed 1280x720, D3D12 Forward+, NVIDIA RTX 5070 Ti.
+  - Initial release run: Settings Exit saved and exited with code 0.
+  - A directory at the temporary-save path forced an actual write failure.
+    Alt+F4 and native X both showed a readable three-choice failure dialog.
+    Keep playing preserved the session. Restoring write access and clicking
+    Retry save and exit saved current progress and exited with code 0.
+  - Demo native X saved independently. Full reload retained full progress.
+  - Normal full Alt+F4 saved and exited with code 0. F1 left the full UI intact.
+  - Rebuilt final full: import dialog visually checked; Alt+F4 exited with code 0
+    after active gameplay, without prior texture/timer-instance leak warnings.
+  - Rebuilt final demo: native X exited with code 0, no ERROR or leak diagnostics.
+  - Quit without saving was tested by the actual dialog signal in both exported
+    runtimes; that button was not separately clicked in the native UI.
+  All test processes were closed. Real player saves were not read or modified.
+
+Repeatable commands (repository root; Python 3 and installed Godot 4.6 required)
+
+python tools/export_windows.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+python tests/run_save_tests.py --godot "C:/path/to/Godot_v4.6-stable_win64.exe"
+python tests/run_export_tests.py --builds "idle-golf/builds/windows/<build-folder>"
+python tests/launch_export_ui.py --builds "idle-golf/builds/windows/<build-folder>" --edition full --profile my-qa-session
+
+Export uses a clean project snapshot, isolated editor/temp folders, explicit
+installed release templates and unique output folders; unexpected ERROR logs fail
+the build. Optional --templates selects the installed 4.6 template directory.
+UI launcher remains running until the game closes and preserves timestamped logs.
+Test fixtures and output stay outside the shipping project; export exclusions also
+guard builds/tests/test-data. Do not ship test override.cfg files or QA profiles.
+
+Remaining release work
+
+B06-B10 course activity, shot context, payouts, cosmetic collisions and Market
+investment persistence remain open. Windows tests used one developer machine;
+clean-machine/min-spec/display/audio/controller/Steam/Cloud/Linux/Deck matrices,
+real disk-full/locked-file scenarios and concurrent instances are not certified.
+Final content filtering, licenses/notices, packaging and Steam deployment remain
+separate gates. See STEAM_RELEASE_CHECKLIST.txt for the complete list.
+
+Implementation references
+https://docs.godotengine.org/en/4.6/classes/class_projectsettings.html
+https://docs.godotengine.org/en/4.6/tutorials/editor/command_line_tutorial.html
+https://raw.githubusercontent.com/godotengine/godot/4.6/platform/windows/os_windows.cpp
+The Windows engine source confirms APPDATA supplies the user-data root, which is
+why test child processes can safely use isolated profiles without altering saves.

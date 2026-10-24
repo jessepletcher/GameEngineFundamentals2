@@ -1,0 +1,65 @@
+COURSE LAYOUT CORRECTIONS
+October 23, 2026
+
+Owner clarification: remove only the added objects, retain original scenery as
+destructibles, and make the cargo ship the Beach completion target.
+
+Changes
+
+Removed the added Beach practice target, water tower and balloon, including their
+physics shapes and inherited-scene overrides. Big Piney's original five targets
+remain. Desert's five original scenery objects remain destructible. Beach now
+has its original ship and lighthouse only: 12 targets and 14 hitboxes overall.
+
+The lighthouse moved from forward z=2400 to z=90 (about 98 displayed yards).
+Its visual size and original place in the illustration remain; its physical
+body and yardage anchor are scaled to the new nearshore distance. It is now an
+ordinary target, with 25 hits and 3 base money per hit.
+
+The Cargo Ship is the Beach's final target, ID level3_cargoship, with 500 hits
+and 15 base money per hit. Its distant-horizon plane is z=1700 (about 1,860
+displayed yards); its hitbox is scaled with the authored artwork. This final
+distance was checked against real-shot reachability and the retained pacing
+target. It replaces the lighthouse's previous final-target role.
+
+Desert cacti and the pump return to their original image registration (no added
+horizontal pixel offsets). Both foreground cacti are at z=45 and the pump at
+z=100. Their physical sizes and positions now match that depth and visible solid
+parts of their artwork. The sand backdrop is behind the object layers, before
+the sky. Foreground grass, cacti, pump/palms, dunes/hills, pyramids and clouds
+retain the original composition and shared authored canvas scale. PNGs untouched.
+
+Completion and saves
+
+Beach's completion UI and target registry now name the Cargo Ship. Breaking the
+lighthouse cannot award a new Beach completion. Course milestones are stored per
+course, so previously earned Beach completion is preserved; no save reset or
+schema change is required. Completion still survives retirement and restarting.
+Sandbox and balance launcher instructions now refer to the ship.
+
+Validation / delivery
+
+Build: idle-golf/builds/windows/20261023-182755-edf65e/
+Validation status: passed. Source checks include 4,117 gameplay assertions,
+166 save checks, 91 audio PCM checks, 207 economy checks, 9 real-physics economy
+checks, six campaign scenarios and the clean-import/diagnostic gates. Both Windows
+editions passed exported save/quit/runtime checks. Completion, balance, golfer
+and unrestricted sandbox launchers passed; sandbox has 55 + 23 process checks.
+The repository's Test Full Game.cmd points to the updated unrestricted tester.
+Close any older running game and reopen that command.
+Test controls still unlock everything and offer money/medal refills and one-hit
+targets. Each build's sandbox profile is separate from normal saves.
+
+Target tests now check retained-object counts, no extra Beach props, foreground
+registration, hitbox centers on opaque artwork, the nearby lighthouse, and real
+shots reaching and destroying all hitboxes. Completion tests explicitly reject
+the former lighthouse final-target ID and actual lighthouse destruction.
+
+Pacing is still a model, not observed player completion. The revised reference
+estimate is about 19.04 / 23.90 / 20.99 hours (63.93 total), within the existing
+55-65 campaign / 16-24 per-course test bands. No economy price curve was changed.
+The full economy gate and real-physics calibration remain required. C08/G04 still
+need player testing. Prior geometry/pacing numbers are historical evidence only.
+
+Rendered previews: DESERT_LAYOUT_PREVIEW.png and BEACH_LAYOUT_PREVIEW.png.
+The build manifest records source/executable hashes and validation evidence.

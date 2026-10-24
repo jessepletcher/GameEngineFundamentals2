@@ -5,3 +5,6 @@ idle-golf/.godot/
 idle-golf/builds/
 idle-golf/*.tmp
 idle-golf/scenes/*.tmp
+.test-output/
+tests/__pycache__/
+tools/__pycache__/

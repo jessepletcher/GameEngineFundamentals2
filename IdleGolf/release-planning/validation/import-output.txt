@@ -1,0 +1,538 @@
+Godot Engine v4.6.stable.official.89cea1439 - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Project initialization (5 steps)[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Loading global class names...[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Verifying GDExtensions...[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Creating autoload scripts...[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Initializing plugins...[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Starting file scan...[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | Started Registering global classes... (17 steps)[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[   5% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  11% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  16% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  22% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  27% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  33% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  38% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  44% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  50% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  55% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  61% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  66% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  72% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  77% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  83% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  88% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[92m[ DONE ][39m [1mupdate_scripts_classes[22m
+[0m
+[   0% ] [90m[1m_update_scan_actions[22m | Started Scanning actions... (174 steps)[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | 1.png[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | 2.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | 3.png[39m[0m
+[   1% ] [90m[1m_update_scan_actions[22m | 4.png[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | 5.png[39m[0m
+[   2% ] [90m[1m_update_scan_actions[22m | 6.png[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | 7.png[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | 8.png[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | 9.png[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | 10.png[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | 11.png[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | 12.png[39m[0m
+[   6% ] [90m[1m_update_scan_actions[22m | 13.png[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | 14.png[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | 15.png[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | Green.png[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | Greens2.png[39m[0m
+[   9% ] [90m[1m_update_scan_actions[22m | Newfairway.png[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | Clouds.png[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | Fairway2.png[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | Fairway3.png[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | FairWay4.png[39m[0m
+[  12% ] [90m[1m_update_scan_actions[22m | Fairway.png[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | LeftIsland.png[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | RightIsland.png[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | Rocks.png[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | Sky.png[39m[0m
+[  15% ] [90m[1m_update_scan_actions[22m | Water1.png[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | Water2.png[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | Water3.png[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | Water4.png[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | Water5.png[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | BackGrass.png[39m[0m
+[  18% ] [90m[1m_update_scan_actions[22m | BackHills.png[39m[0m
+[  19% ] [90m[1m_update_scan_actions[22m | Blimp.png[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | Clouds.png[39m[0m
+[  20% ] [90m[1m_update_scan_actions[22m | Dunes.png[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | FrontGrass.png[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | FrontHills.png[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | Ground.png[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | LeftCactus.png[39m[0m
+[  23% ] [90m[1m_update_scan_actions[22m | OilPump.png[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | PalmTrees.png[39m[0m
+[  24% ] [90m[1m_update_scan_actions[22m | Pyramids.png[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | RightCactus.png[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | Sky.png[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | IdleGolf_Demo_Cover.svg[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | ShopSignAnimation-export.png[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | 1GrassAnim.png[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | 3TreeAnim.png[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | 4TreeAnim.png[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | 5TreeAnim.png[39m[0m
+[  29% ] [90m[1m_update_scan_actions[22m | AimBar.png[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | AimSlider.png[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | balatro.otf[39m[0m
+[  31% ] [90m[1m_update_scan_actions[22m | BallIcon.png[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | BallShopIcon.png[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | BallShopIconPressed.png[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | BallSpeedButton.png[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | BallSpeedButtonGrey.png[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | BallSpeedButtonPressed.png[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | Beep.mp3[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | BellSound.mp3[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | BlackFlag.png[39m[0m
+[  36% ] [90m[1m_update_scan_actions[22m | Blink.mp3[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | BlueFlag.png[39m[0m
+[  37% ] [90m[1m_update_scan_actions[22m | ButtonPress.mp3[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | BuyButton.png[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | BuyButtonPressed.png[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | CashLabel.png[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | CashMenuBackground.png[39m[0m
+[  40% ] [90m[1m_update_scan_actions[22m | Casino2.mp3[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | Casino.mp3[39m[0m
+[  41% ] [90m[1m_update_scan_actions[22m | Coin.mp3[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | ConsistencyButton.png[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | ConsistencyButtonGrey.png[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | ConsistencyButtonPressed.png[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | Course1Icon.png[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | CourseShopIcon.png[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | CourseShopIconPressed.png[39m[0m
+[  45% ] [90m[1m_update_scan_actions[22m | Destruction.mp3[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | DollarBill.png[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | FairwayStrip.png[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | FireWatchTower.png[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | Firework.mp3[39m[0m
+[  48% ] [90m[1m_update_scan_actions[22m | FireWorksBalllIcon.png[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | FlagHit.mp3[39m[0m
+[  49% ] [90m[1m_update_scan_actions[22m | FlagStickHit.mp3[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | FlatDistanceButton.png[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | FlatDistanceButtonGrey.png[39m[0m
+[  51% ] [90m[1m_update_scan_actions[22m | FlatDistanceButtonPressed.png[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | GoldCoin.png[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | GolfBall2.png[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | golfball.png[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | Golfer1.png[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | Golfer2.png[39m[0m
+[  54% ] [90m[1m_update_scan_actions[22m | Golfer4.png[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | GolferShopIcon.png[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | GolferShopIconPressed.png[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | GolfHit.mp3[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | GolfSwing-Sheet.png[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | good golf.wav[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | GrassPix.png[39m[0m
+[  58% ] [90m[1m_update_scan_actions[22m | HelpButton.png[39m[0m
+[  59% ] [90m[1m_update_scan_actions[22m | HomingBalllIcon.png[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | HotAirBalloon.png[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | icon.svg[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | IdleGolfBackground.png[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | IdleGolfBackgroundfairway2.png[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | IdleGolfBackgroundfairway3.png[39m[0m
+[  62% ] [90m[1m_update_scan_actions[22m | IdleGolfBackgroundfairway.png[39m[0m
+[  63% ] [90m[1m_update_scan_actions[22m | IdleGolfBeachLevel.png[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | ItemUnlocked.png[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | kinda zelda sounding.wav[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | LeftBarWholeBackground.png[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | LeftMenuBackground.png[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | LionTreesIcon.png[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | LionTreesPortrait.png[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | LionTreesSwing.png[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | LockedIcon.png[39m[0m
+[  68% ] [90m[1m_update_scan_actions[22m | MedalAndExitSign.png[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | MedalIcon.png[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | MedalsBackground.png[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | MedalShopBackground.png[39m[0m
+[  70% ] [90m[1m_update_scan_actions[22m | MedalsLabel.png[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | MedalsTabLabel.png[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | MoneyBackground.png[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | MoneyLabel.png[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | MoneyMultButton.png[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | MoneyMultButtonGrey.png[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | MoneyMultButtonPressed.png[39m[0m
+[  74% ] [90m[1m_update_scan_actions[22m | Mouse.png[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | MousePressed.png[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | MultBallButton.png[39m[0m
+[  76% ] [90m[1m_update_scan_actions[22m | MultBallButtonGrey.png[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | MultBallButtonPressed.png[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | PinSeekBalllIcon.png[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | ProShop.png[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | RateOfFireButton.png[39m[0m
+[  79% ] [90m[1m_update_scan_actions[22m | RateOfFireButtonGrey.png[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | RateOfFireButtonPressed.png[39m[0m
+[  80% ] [90m[1m_update_scan_actions[22m | RedFlag.png[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | RetireButton.png[39m[0m
+[  81% ] [90m[1m_update_scan_actions[22m | RetireButtonPressed.png[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | SettingsButton.png[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | ShopBallButton.png[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | ShopBallButtonPressed.png[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | ShopButton.png[39m[0m
+[  84% ] [90m[1m_update_scan_actions[22m | ShopClubButton.png[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | ShopClubButtonPressed.png[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | ShopCourseButton.png[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | ShopCourseButtonPressed.png[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | ShopItemBackground.png[39m[0m
+[  87% ] [90m[1m_update_scan_actions[22m | ShopKeepIcon-export.png[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | ShopKeepPortrait.png[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | ShopKeepSwing.png[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | StandardGolferIcon-export.png[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | StandardGolferPortrait.png[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | Target.png[39m[0m
+[  90% ] [90m[1m_update_scan_actions[22m | Thud.mp3[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | TrajectoryBox.png[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | TrajectoryMarker.png[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | UpgradeBorderTop.png[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | UpgradesButton.png[39m[0m
+[  93% ] [90m[1m_update_scan_actions[22m | UpgradesButtonPressed.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | UpgradesMenuBackground.png[39m[0m
+[  94% ] [90m[1m_update_scan_actions[22m | u_vr5icvkppa-nature-ambience-323729.mp3[39m[0m
+[  95% ] [90m[1m_update_scan_actions[22m | WaterTower.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | XPBackground.png[39m[0m
+[  96% ] [90m[1m_update_scan_actions[22m | XPBarBackground.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | XPBarProgress.png[39m[0m
+[  97% ] [90m[1m_update_scan_actions[22m | XPMultButton.png[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | XPMultButtonGrey.png[39m[0m
+[  98% ] [90m[1m_update_scan_actions[22m | XPMultButtonPressed.png[39m[0m
+[92m[ DONE ][39m [1m_update_scan_actions[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importing Assets (154 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   1% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   1% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   2% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   3% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   3% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   4% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   5% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   5% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   6% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   7% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   7% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   8% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   9% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   9% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  10% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  10% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  11% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  12% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  12% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  13% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  14% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  14% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  15% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  16% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  16% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  17% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  18% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  18% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  19% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  20% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  20% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  22% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  23% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  23% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  24% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  25% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  25% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  26% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  27% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  27% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  28% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  29% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  29% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  30% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  30% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  31% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  32% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  32% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  33% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  34% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  34% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  35% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  36% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  36% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  37% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  38% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  38% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  39% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  40% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  40% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  41% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  41% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  42% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  43% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  43% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  44% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  45% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  45% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  46% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  47% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  47% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  48% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  49% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  49% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  50% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  50% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  51% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  52% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  52% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  53% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  54% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  54% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  55% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  56% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  56% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  57% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  58% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  58% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  59% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  60% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  60% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  61% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  61% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  62% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  63% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  63% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  64% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  65% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  65% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  66% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  67% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  67% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  68% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  69% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  69% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  70% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  70% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  71% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  72% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  72% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  73% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  74% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  74% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  75% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  76% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  76% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  77% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  79% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  80% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  80% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  81% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  81% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  82% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  83% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  83% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  84% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  85% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  85% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  86% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  87% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  87% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  88% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  89% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  89% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  90% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  90% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  91% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  92% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  92% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  93% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  94% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  94% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  95% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  96% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  96% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  97% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  98% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  98% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Executing pre-reimport operations...[39m[0m
+[   0% ] [90m[1mreimport[22m | balatro.otf[39m[0m
+res://balatro.otf: Pixel font detected, disabling subpixel positioning.
+[   0% ] [90m[1mreimport[22m | balatro.otf[39m[0m
+[   1% ] [90m[1mreimport[22m | u_vr5icvkppa-nature-ambience-323729.mp3[39m[0m
+[   1% ] [90m[1mreimport[22m | balatro.otf[39m[0m
+[   2% ] [90m[1mreimport[22m | u_vr5icvkppa-nature-ambience-323729.mp3[39m[0m
+[   3% ] [90m[1mreimport[22m | Casino.mp3[39m[0m
+[   3% ] [90m[1mreimport[22m | ItemUnlocked.png[39m[0m
+[   4% ] [90m[1mreimport[22m | LeftBarWholeBackground.png[39m[0m
+[   5% ] [90m[1mreimport[22m | LeftMenuBackground.png[39m[0m
+[   5% ] [90m[1mreimport[22m | LionTreesIcon.png[39m[0m
+[   6% ] [90m[1mreimport[22m | LionTreesSwing.png[39m[0m
+[   7% ] [90m[1mreimport[22m | LockedIcon.png[39m[0m
+[   7% ] [90m[1mreimport[22m | MedalAndExitSign.png[39m[0m
+[   8% ] [90m[1mreimport[22m | MedalIcon.png[39m[0m
+[   9% ] [90m[1mreimport[22m | MedalsBackground.png[39m[0m
+[   9% ] [90m[1mreimport[22m | MedalShopBackground.png[39m[0m
+[  10% ] [90m[1mreimport[22m | MedalsLabel.png[39m[0m
+[  10% ] [90m[1mreimport[22m | MedalsTabLabel.png[39m[0m
+[  11% ] [90m[1mreimport[22m | MoneyBackground.png[39m[0m
+[  12% ] [90m[1mreimport[22m | MoneyLabel.png[39m[0m
+[  12% ] [90m[1mreimport[22m | MoneyMultButton.png[39m[0m
+[  13% ] [90m[1mreimport[22m | MoneyMultButtonGrey.png[39m[0m
+[  14% ] [90m[1mreimport[22m | MoneyMultButtonPressed.png[39m[0m
+[  14% ] [90m[1mreimport[22m | FlatDistanceButtonPressed.png[39m[0m
+[  15% ] [90m[1mreimport[22m | GoldCoin.png[39m[0m
+[  16% ] [90m[1mreimport[22m | GolfBall2.png[39m[0m
+[  16% ] [90m[1mreimport[22m | golfball.png[39m[0m
+[  17% ] [90m[1mreimport[22m | Golfer1.png[39m[0m
+[  18% ] [90m[1mreimport[22m | Golfer2.png[39m[0m
+[  18% ] [90m[1mreimport[22m | Golfer4.png[39m[0m
+[  19% ] [90m[1mreimport[22m | GolferShopIcon.png[39m[0m
+[  20% ] [90m[1mreimport[22m | GolferShopIconPressed.png[39m[0m
+[  20% ] [90m[1mreimport[22m | GolfSwing-Sheet.png[39m[0m
+[  21% ] [90m[1mreimport[22m | GrassPix.png[39m[0m
+[  21% ] [90m[1mreimport[22m | HelpButton.png[39m[0m
+[  22% ] [90m[1mreimport[22m | HotAirBalloon.png[39m[0m
+[  23% ] [90m[1mreimport[22m | icon.svg[39m[0m
+[  23% ] [90m[1mreimport[22m | IdleGolfBackground.png[39m[0m
+[  24% ] [90m[1mreimport[22m | IdleGolfBackgroundfairway2.png[39m[0m
+[  25% ] [90m[1mreimport[22m | IdleGolfBackgroundfairway3.png[39m[0m
+[  25% ] [90m[1mreimport[22m | IdleGolfBackgroundfairway.png[39m[0m
+[  26% ] [90m[1mreimport[22m | IdleGolfBeachLevel.png[39m[0m
+[  27% ] [90m[1mreimport[22m | ShopCourseButtonPressed.png[39m[0m
+[  27% ] [90m[1mreimport[22m | ShopItemBackground.png[39m[0m
+[  28% ] [90m[1mreimport[22m | ShopKeepIcon-export.png[39m[0m
+[  29% ] [90m[1mreimport[22m | ShopKeepSwing.png[39m[0m
+[  29% ] [90m[1mreimport[22m | StandardGolferIcon-export.png[39m[0m
+[  30% ] [90m[1mreimport[22m | Target.png[39m[0m
+[  30% ] [90m[1mreimport[22m | TrajectoryBox.png[39m[0m
+[  31% ] [90m[1mreimport[22m | TrajectoryMarker.png[39m[0m
+[  32% ] [90m[1mreimport[22m | UpgradeBorderTop.png[39m[0m
+[  32% ] [90m[1mreimport[22m | UpgradesButton.png[39m[0m
+[  33% ] [90m[1mreimport[22m | UpgradesButtonPressed.png[39m[0m
+[  34% ] [90m[1mreimport[22m | UpgradesMenuBackground.png[39m[0m
+[  34% ] [90m[1mreimport[22m | WaterTower.png[39m[0m
+[  35% ] [90m[1mreimport[22m | XPBackground.png[39m[0m
+[  36% ] [90m[1mreimport[22m | XPBarBackground.png[39m[0m
+[  36% ] [90m[1mreimport[22m | XPBarProgress.png[39m[0m
+[  37% ] [90m[1mreimport[22m | XPMultButton.png[39m[0m
+[  38% ] [90m[1mreimport[22m | XPMultButtonGrey.png[39m[0m
+[  38% ] [90m[1mreimport[22m | XPMultButtonPressed.png[39m[0m
+[  39% ] [90m[1mreimport[22m | Mouse.png[39m[0m
+[  40% ] [90m[1mreimport[22m | MousePressed.png[39m[0m
+[  40% ] [90m[1mreimport[22m | MultBallButton.png[39m[0m
+[  41% ] [90m[1mreimport[22m | MultBallButtonGrey.png[39m[0m
+[  41% ] [90m[1mreimport[22m | MultBallButtonPressed.png[39m[0m
+[  42% ] [90m[1mreimport[22m | ProShop.png[39m[0m
+[  43% ] [90m[1mreimport[22m | RateOfFireButton.png[39m[0m
+[  43% ] [90m[1mreimport[22m | RateOfFireButtonGrey.png[39m[0m
+[  44% ] [90m[1mreimport[22m | RateOfFireButtonPressed.png[39m[0m
+[  45% ] [90m[1mreimport[22m | RedFlag.png[39m[0m
+[  45% ] [90m[1mreimport[22m | RetireButton.png[39m[0m
+[  46% ] [90m[1mreimport[22m | RetireButtonPressed.png[39m[0m
+[  47% ] [90m[1mreimport[22m | SettingsButton.png[39m[0m
+[  47% ] [90m[1mreimport[22m | ShopBallButton.png[39m[0m
+[  48% ] [90m[1mreimport[22m | ShopBallButtonPressed.png[39m[0m
+[  49% ] [90m[1mreimport[22m | ShopButton.png[39m[0m
+[  49% ] [90m[1mreimport[22m | ShopClubButton.png[39m[0m
+[  50% ] [90m[1mreimport[22m | ShopClubButtonPressed.png[39m[0m
+[  50% ] [90m[1mreimport[22m | ShopCourseButton.png[39m[0m
+[  51% ] [90m[1mreimport[22m | Fairway2.png[39m[0m
+[  52% ] [90m[1mreimport[22m | Fairway3.png[39m[0m
+[  52% ] [90m[1mreimport[22m | FairWay4.png[39m[0m
+[  53% ] [90m[1mreimport[22m | Fairway.png[39m[0m
+[  54% ] [90m[1mreimport[22m | LeftIsland.png[39m[0m
+[  54% ] [90m[1mreimport[22m | RightIsland.png[39m[0m
+[  55% ] [90m[1mreimport[22m | Rocks.png[39m[0m
+[  56% ] [90m[1mreimport[22m | Sky.png[39m[0m
+[  56% ] [90m[1mreimport[22m | Water1.png[39m[0m
+[  57% ] [90m[1mreimport[22m | Water2.png[39m[0m
+[  58% ] [90m[1mreimport[22m | Water3.png[39m[0m
+[  58% ] [90m[1mreimport[22m | Water4.png[39m[0m
+[  59% ] [90m[1mreimport[22m | Water5.png[39m[0m
+[  60% ] [90m[1mreimport[22m | BackGrass.png[39m[0m
+[  60% ] [90m[1mreimport[22m | BackHills.png[39m[0m
+[  61% ] [90m[1mreimport[22m | Blimp.png[39m[0m
+[  61% ] [90m[1mreimport[22m | Clouds.png[39m[0m
+[  62% ] [90m[1mreimport[22m | Dunes.png[39m[0m
+[  63% ] [90m[1mreimport[22m | FrontGrass.png[39m[0m
+[  63% ] [90m[1mreimport[22m | 1.png[39m[0m
+[  64% ] [90m[1mreimport[22m | 2.png[39m[0m
+[  65% ] [90m[1mreimport[22m | 3.png[39m[0m
+[  65% ] [90m[1mreimport[22m | 4.png[39m[0m
+[  66% ] [90m[1mreimport[22m | 5.png[39m[0m
+[  67% ] [90m[1mreimport[22m | 6.png[39m[0m
+[  67% ] [90m[1mreimport[22m | 7.png[39m[0m
+[  68% ] [90m[1mreimport[22m | 8.png[39m[0m
+[  69% ] [90m[1mreimport[22m | 9.png[39m[0m
+[  69% ] [90m[1mreimport[22m | 10.png[39m[0m
+[  70% ] [90m[1mreimport[22m | 11.png[39m[0m
+[  70% ] [90m[1mreimport[22m | 12.png[39m[0m
+[  71% ] [90m[1mreimport[22m | 13.png[39m[0m
+[  72% ] [90m[1mreimport[22m | 14.png[39m[0m
+[  72% ] [90m[1mreimport[22m | 15.png[39m[0m
+[  73% ] [90m[1mreimport[22m | Green.png[39m[0m
+[  74% ] [90m[1mreimport[22m | Greens2.png[39m[0m
+[  74% ] [90m[1mreimport[22m | Newfairway.png[39m[0m
+[  75% ] [90m[1mreimport[22m | Clouds.png[39m[0m
+[  76% ] [90m[1mreimport[22m | BallSpeedButton.png[39m[0m
+[  76% ] [90m[1mreimport[22m | BallSpeedButtonGrey.png[39m[0m
+[  77% ] [90m[1mreimport[22m | BallSpeedButtonPressed.png[39m[0m
+[  78% ] [90m[1mreimport[22m | BlackFlag.png[39m[0m
+[  78% ] [90m[1mreimport[22m | BlueFlag.png[39m[0m
+[  79% ] [90m[1mreimport[22m | BuyButton.png[39m[0m
+[  80% ] [90m[1mreimport[22m | BuyButtonPressed.png[39m[0m
+[  80% ] [90m[1mreimport[22m | CashLabel.png[39m[0m
+[  81% ] [90m[1mreimport[22m | CashMenuBackground.png[39m[0m
+[  81% ] [90m[1mreimport[22m | ConsistencyButton.png[39m[0m
+[  82% ] [90m[1mreimport[22m | ConsistencyButtonGrey.png[39m[0m
+[  83% ] [90m[1mreimport[22m | ConsistencyButtonPressed.png[39m[0m
+[  83% ] [90m[1mreimport[22m | CourseShopIcon.png[39m[0m
+[  84% ] [90m[1mreimport[22m | CourseShopIconPressed.png[39m[0m
+[  85% ] [90m[1mreimport[22m | DollarBill.png[39m[0m
+[  85% ] [90m[1mreimport[22m | FairwayStrip.png[39m[0m
+[  86% ] [90m[1mreimport[22m | FireWatchTower.png[39m[0m
+[  87% ] [90m[1mreimport[22m | FlatDistanceButton.png[39m[0m
+[  87% ] [90m[1mreimport[22m | FlatDistanceButtonGrey.png[39m[0m
+[  88% ] [90m[1mreimport[22m | FrontHills.png[39m[0m
+[  89% ] [90m[1mreimport[22m | Ground.png[39m[0m
+[  89% ] [90m[1mreimport[22m | LeftCactus.png[39m[0m
+[  90% ] [90m[1mreimport[22m | OilPump.png[39m[0m
+[  90% ] [90m[1mreimport[22m | PalmTrees.png[39m[0m
+[  91% ] [90m[1mreimport[22m | Pyramids.png[39m[0m
+[  92% ] [90m[1mreimport[22m | RightCactus.png[39m[0m
+[  92% ] [90m[1mreimport[22m | Sky.png[39m[0m
+[  93% ] [90m[1mreimport[22m | IdleGolf_Demo_Cover.svg[39m[0m
+[  94% ] [90m[1mreimport[22m | ShopSignAnimation-export.png[39m[0m
+[  94% ] [90m[1mreimport[22m | 1GrassAnim.png[39m[0m
+[  95% ] [90m[1mreimport[22m | 3TreeAnim.png[39m[0m
+[  96% ] [90m[1mreimport[22m | 4TreeAnim.png[39m[0m
+[  96% ] [90m[1mreimport[22m | 5TreeAnim.png[39m[0m
+[  97% ] [90m[1mreimport[22m | AimBar.png[39m[0m
+[  98% ] [90m[1mreimport[22m | balatro.otf[39m[0m
+[  98% ] [90m[1mreimport[22m | u_vr5icvkppa-nature-ambience-323729.mp3[39m[0m
+[  99% ] [90m[1mreimport[22m | Finalizing Asset Import...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importing Assets (154 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Executing post-reimport operations...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started Loading editor (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Loading editor layout...[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | Loading docks...[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
+ERROR: Unrecognized UID: "uid://dmhajsltvgig6".
+   at: get_id_path (core/io/resource_uid.cpp:208)
+ERROR: Could not open 'user://' directory: 'user://'.
+   at: _get_and_create_snapshot_storage_dir (modules/objectdb_profiler/editor/objectdb_profiler_panel.cpp:154)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "multi_spread_step" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://main.gd:443)
+ERROR: Failed to load script "res://main.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript.cpp:2907)

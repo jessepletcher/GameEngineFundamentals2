@@ -1,0 +1,7 @@
+policy,income_factor,purchase_interval_seconds,course1_hours,course2_hours,course3_hours,total_hours
+balanced,1,60,19.042,18.65,23.067,60.758
+speed,1,60,16.692,16.958,22.65,56.3
+income,1,60,21.017,21.85,26.733,69.6
+balanced,0.75,60,25.792,24.817,31.333,81.942
+balanced,1.5,60,12.792,12.467,15.417,40.675
+balanced,1,300,19.475,18.883,23.717,62.075

@@ -1,0 +1,42 @@
+extends SceneTree
+func _initialize():
+    call_deferred("_run")
+func _run():
+    var state = root.get_node("GameState")
+    print("AUDIT catalog=", state.balls.size(), "/", state.golfers.size(), "/", state.courses.size(), "/", state.upgrades.size())
+    print("AUDIT auto_accept_quit=", auto_accept_quit)
+    root.propagate_notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
+    await create_timer(0.1).timeout
+    print("AUDIT still_running_after_close_request=true")
+    var f = FileAccess.open("res://audit_save.cfg", FileAccess.WRITE)
+    f.store_string("[invalid")
+    f.close()
+    state.load_game()
+    state.save()
+    print("AUDIT corrupted_save_overwritten=", not FileAccess.get_file_as_string("res://audit_save.cfg").begins_with("[invalid"))
+    var scene = load("res://scenes/main.tscn").instantiate()
+    root.add_child(scene)
+    current_scene = scene
+    state.equipped_course = "course2"
+    scene._switch_course()
+    var hidden_active = 0
+    for target in get_nodes_in_group("destructibles"):
+        if not target.is_visible_in_tree() and target.is_physics_processing() and not target.collision_shape.disabled:
+            hidden_active += 1
+    print("AUDIT hidden_active_destructibles=", hidden_active)
+    var ball = load("res://scenes/Ball.tscn").instantiate()
+    scene.add_child(ball)
+    ball.freeze = true
+    for flag in get_nodes_in_group("flags"):
+        if not flag.is_visible_in_tree():
+            ball.global_position = flag.global_position + Vector3(0, 0.1, 0)
+            break
+    ball._start_homing()
+    print("AUDIT homing_selected_hidden_flag=", not ball._target_flag.is_visible_in_tree())
+    var target = get_nodes_in_group("destructibles")[0]
+    var hits_before = target._hits_taken
+    ball._is_fake = true
+    ball.global_position = target.collision_shape.global_position
+    target._physics_process(0.016)
+    print("AUDIT fake_fragment_damaged_target=", target._hits_taken > hits_before)
+    quit()
